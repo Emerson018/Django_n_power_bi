@@ -2,9 +2,22 @@ from rest_framework import serializers
 from .models import User, Role
 
 class UserSerializer(serializers.ModelSerializer):
+    role_names = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name',
+        source='roles'
+    )
+    role_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Role.objects.all(),
+        source='roles',
+        required=False
+    )
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'is_active', 'role_names', 'role_ids')
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)

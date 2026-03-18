@@ -4,14 +4,19 @@ import { useAuth } from '../context/AuthContext';
 const UserManagement = () => {
     const { api } = useAuth();
     const [users, setUsers] = useState([]);
+    const [roles, setRoles] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchUsers = async () => {
+    const fetchData = async () => {
         try {
-            const response = await api.get('/admin/users/');
-            setUsers(response.data);
+            const [usersRes, rolesRes] = await Promise.all([
+                api.get('/admin/users/'),
+                api.get('/admin/roles/')
+            ]);
+            setUsers(usersRes.data);
+            setRoles(rolesRes.data);
         } catch (error) {
-            console.error("Erro ao buscar usuários", error);
+            console.error("Erro ao buscar dados", error);
         } finally {
             setLoading(false);
         }
@@ -20,14 +25,30 @@ const UserManagement = () => {
     const toggleUserStatus = async (userId) => {
         try {
             await api.post(`/admin/users/${userId}/toggle_status/`);
-            fetchUsers();
+            fetchData();
         } catch (error) {
-            alert("Erro ao alterar status do usuário");
+            const message = error.response?.data?.error || "Erro ao alterar status do usuário";
+            alert(message);
+        }
+    };
+
+    const removeCurrentRoles = async (userId) => {
+        // O DRF por padrão vai sobrescrever ao enviar role_ids, então só precisamos patch
+    };
+
+    const updateUserRole = async (userId, roleId) => {
+        try {
+            await api.patch(`/admin/users/${userId}/`, {
+                role_ids: [roleId]
+            });
+            fetchData();
+        } catch (error) {
+            alert("Erro ao atualizar role do usuário");
         }
     };
 
     useEffect(() => {
-        fetchUsers();
+        fetchData();
     }, []);
 
     if (loading) return <div className="p-8 text-center">Carregando usuários...</div>;
@@ -44,6 +65,7 @@ const UserManagement = () => {
                         <tr>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-mail</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perfil / Role</th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                         </tr>
@@ -60,6 +82,18 @@ const UserManagement = () => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <select 
+                                        className="text-sm border-gray-200 rounded-md focus:ring-secondary focus:border-secondary transition-all"
+                                        value={user.role_ids?.[0] || ""}
+                                        onChange={(e) => updateUserRole(user.id, e.target.value)}
+                                    >
+                                        <option value="">Sem Role</option>
+                                        {roles.map(role => (
+                                            <option key={role.id} value={role.id}>{role.name}</option>
+                                        ))}
+                                    </select>
+                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
                                         {user.is_active ? 'Ativo' : 'Inativo'}

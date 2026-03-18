@@ -2,7 +2,7 @@ import React from 'react';
 
 const DjangoAdminView = () => {
     // A URL do admin do Django (assumindo que o backend roda na porta 8000)
-    const adminUrl = "http://127.0.0.1:8000/admin/";
+    const adminUrl = "http://localhost:8000/admin/";
 
     return (
         <div className="flex-1 flex flex-col h-[calc(100vh-140px)] bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">

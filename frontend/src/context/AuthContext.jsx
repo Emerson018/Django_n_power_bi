@@ -19,12 +19,29 @@ api.interceptors.request.use((config) => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [dashboards, setDashboards] = useState([]);
+    const [isLoadingDashboards, setIsLoadingDashboards] = useState(false);
+
+    const fetchDashboards = async () => {
+        if (!localStorage.getItem('accessToken')) return;
+        setIsLoadingDashboards(true);
+        try {
+            const response = await api.get('/dashboards/');
+            setDashboards(response.data);
+            return response.data;
+        } catch (error) {
+            console.error("Erro ao carregar dashboards", error);
+        } finally {
+            setIsLoadingDashboards(false);
+        }
+    };
 
     const login = async (username, password) => {
         const response = await api.post('/token/', { username, password });
         localStorage.setItem('accessToken', response.data.access);
         localStorage.setItem('refreshToken', response.data.refresh);
         await loadUser();
+        await fetchDashboards();
     };
 
     const register = async (userData) => {
@@ -35,12 +52,14 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setUser(null);
+        setDashboards([]);
     };
 
     const loadUser = async () => {
         try {
             const response = await api.get('/user/');
             setUser(response.data);
+            fetchDashboards();
         } catch (error) {
             logout();
         } finally {
@@ -58,7 +77,10 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, register, loading, api }}>
+        <AuthContext.Provider value={{ 
+            user, login, logout, register, loading, api, 
+            dashboards, fetchDashboards, isLoadingDashboards 
+        }}>
             {children}
         </AuthContext.Provider>
     );

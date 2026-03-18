@@ -6,18 +6,18 @@ import UserManagement from '../views/UserManagement';
 import DashboardManagement from '../views/DashboardManagement';
 import DjangoAdminView from '../views/DjangoAdminView';
 
-function Sidebar({ activeId, onSelect, dashboards }) {
+function Sidebar({ activeId, onSelect, dashboards, isCollapsed }) {
   const { user } = useAuth();
   const location = useLocation();
 
   return (
-    <aside className="w-72 bg-primary text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-20">
-      <div className="p-8 border-b border-white/10">
+    <aside className={`bg-primary text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-20 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-0 -translate-x-full' : 'w-72 translate-x-0'}`}>
+      <div className={`p-8 border-b border-white/10 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
         <h1 className="text-2xl font-bold tracking-tight">BI Portal</h1>
         <p className="text-xs text-secondary mt-1 font-medium uppercase tracking-widest">Enterprise Analytics</p>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+      <nav className={`flex-1 overflow-y-auto py-6 px-4 space-y-2 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
         <div className="px-4 mb-2">
           <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Dashboards</span>
         </div>
@@ -79,7 +79,7 @@ function Sidebar({ activeId, onSelect, dashboards }) {
         )}
       </nav>
       
-      <div className="p-6 bg-white/5 mt-auto">
+      <div className={`p-6 bg-white/5 mt-auto transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white font-bold ring-4 ring-white/10 shadow-lg">
              {user?.username?.charAt(0).toUpperCase()}
@@ -94,14 +94,25 @@ function Sidebar({ activeId, onSelect, dashboards }) {
   );
 }
 
-function Header({ title }) {
+function Header({ title, onToggleSidebar, isSidebarCollapsed }) {
   const { user, logout } = useAuth();
 
   return (
     <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10 sticky top-0 shadow-sm">
-      <div className="flex flex-col">
-        <h2 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h2>
-        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">Real-time Data Sync</p>
+      <div className="flex items-center gap-4">
+        <button 
+          onClick={onToggleSidebar}
+          className="p-2 hover:bg-gray-50 rounded-lg transition-colors text-gray-500 group"
+          title={isSidebarCollapsed ? "Expandir Menu" : "Recolher Menu"}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-6 h-6 transition-transform duration-300 ${isSidebarCollapsed ? '' : 'rotate-180'}`}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+        <div className="flex flex-col">
+          <h2 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h2>
+          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">Real-time Data Sync</p>
+        </div>
       </div>
       
       <div className="flex items-center gap-6">
@@ -136,38 +147,33 @@ function Header({ title }) {
 }
 
 export default function Layout() {
-  const { api } = useAuth();
-  const [dbList, setDbList] = useState([]);
+  const { api, dashboards, fetchDashboards, isLoadingDashboards } = useAuth();
   const [selectedDashboard, setSelectedDashboard] = useState(null);
-  const [isLoadingDashboards, setIsLoadingDashboards] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
+  // Seleciona o primeiro dashboard automaticamente se nada estiver selecionado
   useEffect(() => {
-    const fetchDashboards = async () => {
-        setIsLoadingDashboards(true);
-        try {
-            const response = await api.get('/dashboards/');
-            setDbList(response.data);
-            if (response.data.length > 0) setSelectedDashboard(response.data[0]);
-        } catch (error) {
-            console.error("Erro ao carregar dashboards", error);
-        } finally {
-            setIsLoadingDashboards(false);
-        }
-    };
-    fetchDashboards();
-  }, [api]);
+    if (dashboards.length > 0 && !selectedDashboard) {
+      setSelectedDashboard(dashboards[0]);
+    }
+  }, [dashboards, selectedDashboard]);
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900 antialiased selection:bg-secondary/30">
       <Sidebar 
         activeId={selectedDashboard?.id} 
-        onSelect={(id) => setSelectedDashboard(dbList.find(db => db.id === id))} 
-        dashboards={dbList}
+        onSelect={(id) => setSelectedDashboard(dashboards.find(db => db.id === id))} 
+        dashboards={dashboards}
+        isCollapsed={isSidebarCollapsed}
       />
 
-      <main className="flex-1 ml-72 min-h-screen bg-gray-50 flex flex-col items-center">
+      <main className={`flex-1 min-h-screen bg-gray-50 flex flex-col items-center transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'ml-0' : 'ml-72'}`}>
         <div className="w-full max-w-[1600px] flex flex-col min-h-screen">
-          <Header title={selectedDashboard?.name || "Administração"} />
+          <Header 
+            title={selectedDashboard?.name || "Administração"} 
+            onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            isSidebarCollapsed={isSidebarCollapsed}
+          />
           
           <div className="p-10 flex-1 flex flex-col">
             <Routes>
@@ -176,7 +182,7 @@ export default function Layout() {
                   embedUrl={selectedDashboard?.public_url} 
                   reportId={selectedDashboard?.id} 
                   isLoading={isLoadingDashboards}
-                  isListEmpty={dbList.length === 0}
+                  isListEmpty={dashboards.length === 0}
                 />
               } />
               <Route path="/admin/users" element={<UserManagement />} />

@@ -7,9 +7,21 @@ from rest_framework import serializers
 
 # Serializers Adicionais para Gestão
 class DashboardSerializer(serializers.ModelSerializer):
+    allowed_role_names = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name',
+        source='allowed_roles'
+    )
+    allowed_role_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Role.objects.all(),
+        source='allowed_roles',
+        required=False
+    )
     class Meta:
         model = Dashboard
-        fields = '__all__'
+        fields = ('id', 'name', 'description', 'public_url', 'allowed_role_names', 'allowed_role_ids', 'created_at')
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,4 +81,9 @@ class AdminDashboardViewSet(viewsets.ModelViewSet):
 class AdminAuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all()
     serializer_class = AuditLogSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class AdminRoleViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer
     permission_classes = [permissions.IsAdminUser]
