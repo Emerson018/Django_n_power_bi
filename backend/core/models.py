@@ -7,6 +7,9 @@ class User(AbstractUser):
     """
     roles = models.ManyToManyField('Role', related_name='users', blank=True)
 
+    def __str__(self):
+        return self.username
+
 class Role(models.Model):
     """
     Representa as roles do sistema (ex: Admin, GerenteVendas, AnalistaSuporte).
@@ -17,31 +20,39 @@ class Role(models.Model):
     def __str__(self):
         return self.name
 
-class PBIReport(models.Model):
+class Dashboard(models.Model):
     """
-    Armazena os detalhes dos Relatórios do Power BI.
+    Armazena os detalhes dos Dashboards (iFrame Público).
     """
-    workspace_id = models.CharField(max_length=255, help_text="ID do Workspace no Power BI")
-    report_id = models.CharField(max_length=255, help_text="ID do Relatório no Power BI")
     name = models.CharField(max_length=100, help_text="Nome amigável do Relatório")
     description = models.TextField(blank=True, null=True)
-
-    class Meta:
-        unique_together = ('workspace_id', 'report_id')
-
-    def __str__(self):
-        return f"{self.name} ({self.report_id})"
-
-class RoleReportPermission(models.Model):
-    """
-    Mapeamento Many-to-Many entre Roles e PBIReports para controle de RBAC.
-    """
-    role = models.ForeignKey(Role, on_delete=models.CASCADE, related_name='report_permissions')
-    report = models.ForeignKey(PBIReport, on_delete=models.CASCADE, related_name='role_permissions')
-    can_view = models.BooleanField(default=True, help_text="Define se a role pode visualizar este relatório")
-
-    class Meta:
-        unique_together = ('role', 'report')
+    public_url = models.URLField(max_length=500, help_text="Link público (iFrame) do Power BI")
+    allowed_roles = models.ManyToManyField(Role, related_name='dashboards', blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.role.name} -> {self.report.name}"
+        return self.name
+
+class AuditLog(models.Model):
+    """
+    Registra ações administrativas significativas.
+    """
+    ACTION_CHOICES = [
+        ('CREATE', 'Criação'),
+        ('UPDATE', 'Atualização'),
+        ('DELETE', 'Remoção'),
+        ('AUTH', 'Login/Logout'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='audit_logs')
+    action = models.CharField(max_length=10, choices=ACTION_CHOICES)
+    resource = models.CharField(max_length=100, help_text="Nome do recurso alterado")
+    description = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.user} - {self.action} - {self.resource}"

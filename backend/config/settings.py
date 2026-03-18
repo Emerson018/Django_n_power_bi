@@ -9,6 +9,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -89,3 +90,25 @@ SIMPLE_JWT = {
 POWERBI_CLIENT_ID = config('POWERBI_CLIENT_ID')
 POWERBI_CLIENT_SECRET = config('POWERBI_CLIENT_SECRET')
 POWERBI_TENANT_ID = config('POWERBI_TENANT_ID')
+# Jazzmin Configuration
+JAZZMIN_SETTINGS = {
+    "site_title": "Portal BI Admin",
+    "site_header": "Portal BI",
+    "site_brand": "Gestão de Dashboards",
+    "welcome_sign": "Bem-vindo ao Painel Administrativo",
+    "copyright": "BI Portal Corp",
+    "search_model": ["core.User", "core.Dashboard"],
+    "colors": {
+        "primary": "#003B67",
+        "secondary": "#88B26C",
+    },
+    "theme": "flatly",
+    "icons": {
+        "core.User": "fas fa-users-cog",
+        "core.Role": "fas fa-user-shield",
+        "core.Dashboard": "fas fa-chart-pie",
+        "core.AuditLog": "fas fa-history",
+    },
+}
+# Segurança para iFrame (Permite integração no React)
+X_FRAME_OPTIONS = 'SAMEORIGIN'

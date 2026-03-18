@@ -1,102 +1,189 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PowerBIViewer from './PowerBIViewer';
+import { useAuth } from '../context/AuthContext';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import UserManagement from '../views/UserManagement';
+import DashboardManagement from '../views/DashboardManagement';
+import DjangoAdminView from '../views/DjangoAdminView';
 
-const dashboards = [
-  { id: 'geral', title: 'Visão Geral' },
-  { id: 'freshservice', title: 'KPIs de Tickets (FreshService)' },
-  { id: 'tasy', title: 'Gestão Hospitalar (Tasy)' },
-];
+function Sidebar({ activeId, onSelect, dashboards }) {
+  const { user } = useAuth();
+  const location = useLocation();
 
-function Sidebar({ selectedId, onSelect }) {
   return (
-    <aside className="w-64 bg-primary h-screen fixed left-0 top-0 flex flex-col text-white shadow-xl z-20">
-      <div className="p-6">
+    <aside className="w-72 bg-primary text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-20">
+      <div className="p-8 border-b border-white/10">
         <h1 className="text-2xl font-bold tracking-tight">BI Portal</h1>
-        <p className="text-sm text-gray-300 mt-1">Inteligência Corporativa</p>
+        <p className="text-xs text-secondary mt-1 font-medium uppercase tracking-widest">Enterprise Analytics</p>
       </div>
-      
-      <nav className="flex-1 mt-6 px-4">
-        <ul className="space-y-2">
-          {dashboards.map((dashboard) => (
-            <li key={dashboard.id}>
-              <button
-                onClick={() => onSelect(dashboard)}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-colors duration-200 ${
-                  selectedId === dashboard.id
-                    ? 'bg-secondary font-semibold text-white'
-                    : 'text-gray-300 hover:bg-white/10 hover:text-white'
-                }`}
-              >
-                {dashboard.title}
-              </button>
-            </li>
-          ))}
-        </ul>
+
+      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+        <div className="px-4 mb-2">
+          <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Dashboards</span>
+        </div>
+        {dashboards.map((db) => (
+          <Link
+            key={db.id}
+            to="/"
+            onClick={() => onSelect(db.id)}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+              (activeId === db.id && location.pathname === '/') ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+            }`}
+          >
+            <div className={`w-2 h-2 rounded-full ${(activeId === db.id && location.pathname === '/') ? 'bg-white' : 'bg-secondary/40 group-hover:bg-secondary'}`}></div>
+            <span className="text-sm font-medium">{db.name}</span>
+          </Link>
+        ))}
+
+        {/* Menu Administrativo para Staff */}
+        {user?.is_staff && (
+          <div className="pt-6 space-y-2">
+            <div className="px-4 mb-2">
+              <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Administração</span>
+            </div>
+            <Link
+              to="/admin/users"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                location.pathname === '/admin/users' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+              </svg>
+              <span className="text-sm font-medium">Usuários</span>
+            </Link>
+            <Link
+              to="/admin/dashboards"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                location.pathname === '/admin/dashboards' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 18H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 12h11.25" />
+              </svg>
+              <span className="text-sm font-medium">Dashboards</span>
+            </Link>
+            
+            <Link
+              to="/admin/panel"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                location.pathname === '/admin/panel' ? 'bg-tertiary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.128 1.41-.513M5.106 17.785l1.15-.964m11.49-9.642 1.149-.964M7.501 19.795l.75-1.3m7.5-12.99.75-1.3m-6.06 15.633.126-1.495m1.448-17.142.126-1.495M12 21V19.5M12 4.5V3m4.806 16.527-.126-1.495m-1.448-17.142-.126-1.495m-6.06 15.633-.75-1.3m7.5-12.99-.75-1.3m-4.106 11.892-1.15-.964m11.49-9.642-1.15-.964m-14.095 5.128-1.41-.513m14.095-5.128-1.41-.513M12 12v3m0 0 3-3m-3 3-3-3" />
+              </svg>
+              <span className="text-sm font-medium">Painel Admin</span>
+            </Link>
+          </div>
+        )}
       </nav>
       
-      <div className="p-4 border-t border-white/10">
-        <p className="text-xs text-center text-gray-400">© 2026 Corporativo</p>
+      <div className="p-6 bg-white/5 mt-auto">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white font-bold ring-4 ring-white/10 shadow-lg">
+             {user?.username?.charAt(0).toUpperCase()}
+          </div>
+          <div className="flex flex-col overflow-hidden">
+            <span className="text-sm font-bold truncate">{user?.first_name}</span>
+            <span className="text-[10px] text-gray-400 uppercase tracking-tighter">Professional Plan</span>
+          </div>
+        </div>
       </div>
     </aside>
   );
 }
 
 function Header({ title }) {
+  const { user, logout } = useAuth();
+
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-10 sticky top-0">
-      <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
+    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10 sticky top-0 shadow-sm">
+      <div className="flex flex-col">
+        <h2 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h2>
+        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">Real-time Data Sync</p>
+      </div>
       
-      <div className="flex items-center gap-4">
-        {/* Placeholder for Alerts */}
-        <button className="text-tertiary hover:bg-red-50 p-2 rounded-full transition-colors relative">
-           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+      <div className="flex items-center gap-6">
+        <button 
+          onClick={logout}
+          className="text-xs font-bold text-gray-400 hover:text-tertiary transition-all flex items-center gap-2 group"
+        >
+          <span className="border-b border-transparent group-hover:border-tertiary">Encerrar Sessão</span>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 translate-y-[0.5px]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6A2.25 2.25 0 005.25 5.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
           </svg>
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-tertiary rounded-full"></span>
         </button>
 
-        <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
-           <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold">
-              U
+        <div className="h-8 w-[1px] bg-gray-100"></div>
+
+        <div className="flex items-center gap-3">
+           <div className="flex flex-col text-right">
+              <span className="text-sm font-bold text-gray-800 leading-none">{user?.username}</span>
+              <span className="text-[10px] text-secondary font-bold uppercase mt-1 tracking-tighter">
+                {user?.is_staff ? 'Administrador' : 'Visualizador'}
+              </span>
            </div>
-           <span className="text-sm font-medium text-gray-700">Usuário</span>
+           <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary border border-primary/10 shadow-inner">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
+                <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
+              </svg>
+           </div>
         </div>
       </div>
     </header>
   );
 }
 
-function PowerBIContainer() {
-  return (
-    <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex items-center justify-center min-h-[600px]">
-       <div className="text-center">
-          <svg className="mx-auto h-12 w-12 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-            <path vectorEffect="non-scaling-stroke" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-          <h3 className="mt-4 text-sm font-semibold text-gray-900">Relatório Power BI</h3>
-          <p className="mt-1 text-sm text-gray-500">O iframe do relatório será injetado aqui pelo PowerBIEmbed.</p>
-       </div>
-    </div>
-  );
-}
-
 export default function Layout() {
-  const [selectedDashboard, setSelectedDashboard] = useState(dashboards[0]);
+  const { api } = useAuth();
+  const [dbList, setDbList] = useState([]);
+  const [selectedDashboard, setSelectedDashboard] = useState(null);
+  const [isLoadingDashboards, setIsLoadingDashboards] = useState(true);
+
+  useEffect(() => {
+    const fetchDashboards = async () => {
+        setIsLoadingDashboards(true);
+        try {
+            const response = await api.get('/dashboards/');
+            setDbList(response.data);
+            if (response.data.length > 0) setSelectedDashboard(response.data[0]);
+        } catch (error) {
+            console.error("Erro ao carregar dashboards", error);
+        } finally {
+            setIsLoadingDashboards(false);
+        }
+    };
+    fetchDashboards();
+  }, [api]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar selectedId={selectedDashboard.id} onSelect={setSelectedDashboard} />
-      
-      <main className="flex-1 ml-64 flex flex-col min-h-screen">
-        <Header title={selectedDashboard.title} />
-        
-        <div className="flex-1 p-8">
-           {/* Mock props for layout validation, these will be replaced with actual API data */}
-           <PowerBIViewer 
-             embedUrl="" 
-             accessToken="" 
-             reportId={selectedDashboard.id} 
-           />
+    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900 antialiased selection:bg-secondary/30">
+      <Sidebar 
+        activeId={selectedDashboard?.id} 
+        onSelect={(id) => setSelectedDashboard(dbList.find(db => db.id === id))} 
+        dashboards={dbList}
+      />
+
+      <main className="flex-1 ml-72 min-h-screen bg-gray-50 flex flex-col items-center">
+        <div className="w-full max-w-[1600px] flex flex-col min-h-screen">
+          <Header title={selectedDashboard?.name || "Administração"} />
+          
+          <div className="p-10 flex-1 flex flex-col">
+            <Routes>
+              <Route path="/" element={
+                <PowerBIViewer 
+                  embedUrl={selectedDashboard?.public_url} 
+                  reportId={selectedDashboard?.id} 
+                  isLoading={isLoadingDashboards}
+                  isListEmpty={dbList.length === 0}
+                />
+              } />
+              <Route path="/admin/users" element={<UserManagement />} />
+              <Route path="/admin/dashboards" element={<DashboardManagement />} />
+              <Route path="/admin/panel" element={<DjangoAdminView />} />
+            </Routes>
+          </div>
         </div>
       </main>
     </div>
