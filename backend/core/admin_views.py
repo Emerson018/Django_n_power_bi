@@ -1,9 +1,14 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
-from .models import User, Dashboard, Role, AuditLog
+from .models import User, Dashboard, Role, DashboardType, AuditLog
 from .serializers import UserSerializer, RegisterSerializer
 from rest_framework import serializers
+
+class DashboardTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DashboardType
+        fields = ('id', 'name')
 
 # Serializers Adicionais para Gestão
 class DashboardSerializer(serializers.ModelSerializer):
@@ -19,9 +24,33 @@ class DashboardSerializer(serializers.ModelSerializer):
         source='allowed_roles',
         required=False
     )
+    dashboard_type_names = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='name',
+        source='dashboard_types'
+    )
+    dashboard_type_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=DashboardType.objects.all(),
+        source='dashboard_types',
+        required=False
+    )
+    allowed_user_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=User.objects.all(),
+        source='allowed_users',
+        required=False
+    )
+    allowed_user_names = serializers.SlugRelatedField(
+        many=True,
+        read_only=True,
+        slug_field='username',
+        source='allowed_users'
+    )
     class Meta:
         model = Dashboard
-        fields = ('id', 'name', 'description', 'public_url', 'allowed_role_names', 'allowed_role_ids', 'created_at')
+        fields = ('id', 'name', 'public_url', 'dashboard_type_names', 'dashboard_type_ids', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,7 +61,7 @@ class AuditLogSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     class Meta:
         model = AuditLog
-        fields = ('id', 'username', 'action', 'resource', 'description', 'timestamp')
+        fields = ('id', 'username', 'action_type', 'object_type', 'object_name', 'timestamp')
 
 # ViewSets de Administração
 class AdminUserViewSet(viewsets.ModelViewSet):
@@ -53,15 +82,6 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 
         user.is_active = not user.is_active
         user.save()
-        
-        # Log da ação
-        AuditLog.objects.create(
-            user=request.user,
-            action='UPDATE',
-            resource=f"User: {user.username}",
-            description=f"Status alterado para: {'Ativo' if user.is_active else 'Inativo'}"
-        )
-        
         return Response({'status': 'success', 'is_active': user.is_active})
 
 class AdminDashboardViewSet(viewsets.ModelViewSet):
@@ -69,21 +89,17 @@ class AdminDashboardViewSet(viewsets.ModelViewSet):
     serializer_class = DashboardSerializer
     permission_classes = [permissions.IsAdminUser]
 
-    def perform_create(self, serializer):
-        dashboard = serializer.save()
-        AuditLog.objects.create(
-            user=self.request.user,
-            action='CREATE',
-            resource='Dashboard',
-            description=f"Criado dashboard: {dashboard.name}"
-        )
-
 class AdminAuditLogViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = AuditLog.objects.all()
+    queryset = AuditLog.objects.all().order_by('-timestamp')
     serializer_class = AuditLogSerializer
     permission_classes = [permissions.IsAdminUser]
 
 class AdminRoleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class AdminDashboardTypeViewSet(viewsets.ModelViewSet):
+    queryset = DashboardType.objects.all()
+    serializer_class = DashboardTypeSerializer
     permission_classes = [permissions.IsAdminUser]

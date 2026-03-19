@@ -1,26 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import PowerBIEmbedViewer from '../components/PowerBIEmbedViewer';
-// import api from '../services/api'; 
+import { useAuth } from '../context/AuthContext';
 
 const DashboardListView = () => {
-    const [dashboards, setDashboards] = useState([]);
+    const { dashboards, fetchDashboards, isLoadingDashboards } = useAuth();
     const [selectedReportId, setSelectedReportId] = useState(null);
 
     useEffect(() => {
-        const fetchDashboards = async () => {
-            try {
-                // Endpoint retorna apenas os dashboards permitidos para a role do usuário (via API Django)
-                // const response = await api.get('/dashboards/');
-                // mock:
-                const response = { data: [{id: 1, name: "Vendas", report_id: "report-x"}] };
-                setDashboards(response.data);
-            } catch (err) {
-                console.error("Erro ao listar dashboards", err);
-            }
-        };
-
         fetchDashboards();
     }, []);
+
+    if (isLoadingDashboards) {
+        return <div className="p-8 text-center">Carregando dashboards...</div>;
+    }
 
     return (
         <div className="dashboard-layout" style={{ display: 'flex', flexDirection: 'row' }}>

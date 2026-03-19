@@ -34,4 +34,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             first_name=validated_data.get('first_name', ''),
             last_name=validated_data.get('last_name', '')
         )
+        # Atribui role padrão 'Usuário' se existir
+        default_role, created = Role.objects.get_or_create(name='Usuário')
+        user.roles.add(default_role)
         return user

@@ -4,7 +4,10 @@ import { useAuth } from '../context/AuthContext';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import UserManagement from '../views/UserManagement';
 import DashboardManagement from '../views/DashboardManagement';
+import DashboardTypeManagement from '../views/DashboardTypeManagement';
 import DjangoAdminView from '../views/DjangoAdminView';
+import AllDashboardsView from '../views/AllDashboardsView';
+import AuditLogView from '../views/AuditLogView';
 
 function Sidebar({ activeId, onSelect, dashboards, isCollapsed }) {
   const { user } = useAuth();
@@ -19,9 +22,25 @@ function Sidebar({ activeId, onSelect, dashboards, isCollapsed }) {
 
       <nav className={`flex-1 overflow-y-auto py-6 px-4 space-y-2 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
         <div className="px-4 mb-2">
-          <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Dashboards</span>
+          <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Menu Principal</span>
         </div>
-        {dashboards.map((db) => (
+        <Link
+          to="/dashboards"
+          className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+            location.pathname === '/dashboards' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+          }`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H18a2.25 2.25 0 01-2.25-2.25v-2.25z" />
+          </svg>
+          <span className="text-sm font-medium">Dashboards</span>
+        </Link>
+
+        <div className="px-4 mb-2 mt-6">
+          <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Meus Favoritos</span>
+        </div>
+        {/* Futuramente isso virá de um endpoint específico de favoritos. Atualmente simulando com os primeiros 5. */}
+        {dashboards.slice(0, 5).map((db) => (
           <Link
             key={db.id}
             to="/"
@@ -61,7 +80,32 @@ function Sidebar({ activeId, onSelect, dashboards, isCollapsed }) {
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 18H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 12h11.25" />
               </svg>
-              <span className="text-sm font-medium">Dashboards</span>
+              <span className="text-sm font-medium">Gestão de relatórios</span>
+            </Link>
+            
+            <Link
+              to="/admin/dashboard-types"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                location.pathname === '/admin/dashboard-types' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a2.25 2.25 0 003.182 0l4.318-4.318a2.25 2.25 0 000-3.182L11.159 3.659A2.25 2.25 0 009.568 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
+              </svg>
+              <span className="text-sm font-medium">Categorias</span>
+            </Link>
+
+            <Link
+              to="/admin/audit-logs"
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
+                location.pathname === '/admin/audit-logs' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium">Histórico</span>
             </Link>
             
             <Link
@@ -177,6 +221,7 @@ export default function Layout() {
           
           <div className="p-10 flex-1 flex flex-col">
             <Routes>
+              <Route path="/dashboards" element={<AllDashboardsView onSelectDashboard={setSelectedDashboard} />} />
               <Route path="/" element={
                 <PowerBIViewer 
                   embedUrl={selectedDashboard?.public_url} 
@@ -187,6 +232,8 @@ export default function Layout() {
               } />
               <Route path="/admin/users" element={<UserManagement />} />
               <Route path="/admin/dashboards" element={<DashboardManagement />} />
+              <Route path="/admin/dashboard-types" element={<DashboardTypeManagement />} />
+              <Route path="/admin/audit-logs" element={<AuditLogView />} />
               <Route path="/admin/panel" element={<DjangoAdminView />} />
             </Routes>
           </div>

@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'crum',
     # Local
     'core.apps.CoreConfig',
 ]
@@ -32,6 +33,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'crum.CurrentRequestUserMiddleware',
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
