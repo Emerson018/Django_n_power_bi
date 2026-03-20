@@ -13,14 +13,22 @@ def seed():
         defaults={'description': 'Acesso total ao sistema'}
     )
     
-    # 2. Vincular Admin User à Role
-    user = User.objects.filter(username='admin').first()
-    if user:
-        user.roles.add(admin_role)
+    # 2. Criar ou atualizar Admin User
+    user, created = User.objects.get_or_create(username='admin', defaults={'email': 'admin@example.com'})
+    if created:
+        user.set_password('admin')
         user.is_staff = True
         user.is_superuser = True
+        user.roles.add(admin_role)
         user.save()
-        print(f"Usuário {user.username} atualizado com Role Admin.")
+        print("Usuário admin criado com senha admin e Role Admin atribuída.")
+    else:
+        user.is_staff = True
+        user.is_superuser = True
+        user.roles.add(admin_role)
+        user.set_password('admin')
+        user.save()
+        print("Usuário admin atualizado (senha admin aplicada e Role Admin garantida).")
 
     # 3. Criar Dashboards Iniciais
     dashboards_data = [

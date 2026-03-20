@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PowerBIViewer from './PowerBIViewer';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeProvider';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import UserManagement from '../views/UserManagement';
 import DashboardManagement from '../views/DashboardManagement';
@@ -14,7 +15,7 @@ function Sidebar({ isCollapsed }) {
   const location = useLocation();
 
   return (
-    <aside className={`bg-primary text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-20 transition-all duration-300 ease-in-out ${isCollapsed ? 'w-0 -translate-x-full' : 'w-72 translate-x-0'}`}>
+    <aside className={`bg-primary text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-20 transition-all duration-300 ease-in-out dark:bg-gray-800 ${isCollapsed ? 'w-0 -translate-x-full' : 'w-72 translate-x-0'}`}>
       <div className={`p-8 border-b border-white/10 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
         <h1 className="text-2xl font-bold tracking-tight">BI Portal</h1>
         <p className="text-xs text-secondary mt-1 font-medium uppercase tracking-widest">Enterprise Analytics</p>
@@ -117,13 +118,14 @@ function Sidebar({ isCollapsed }) {
 
 function Header({ title, onToggleSidebar, isSidebarCollapsed }) {
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10 sticky top-0 shadow-sm">
+    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10 sticky top-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
       <div className="flex items-center gap-4">
         <button 
           onClick={onToggleSidebar}
-          className="p-2 hover:bg-gray-50 rounded-lg transition-colors text-gray-500 group"
+          className="p-2 hover:bg-gray-50 rounded-lg transition-colors text-gray-500 group dark:hover:bg-gray-800/50"
           title={isSidebarCollapsed ? "Expandir Menu" : "Recolher Menu"}
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-6 h-6 transition-transform duration-300 ${isSidebarCollapsed ? '' : 'rotate-180'}`}>
@@ -131,15 +133,32 @@ function Header({ title, onToggleSidebar, isSidebarCollapsed }) {
           </svg>
         </button>
         <div className="flex flex-col">
-          <h2 className="text-xl font-bold text-gray-800 tracking-tight">{title}</h2>
-          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5">Real-time Data Sync</p>
+          <h2 className="text-xl font-bold text-gray-800 tracking-tight dark:text-white">{title}</h2>
+          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5 dark:text-gray-500">Real-time Data Sync</p>
         </div>
       </div>
       
       <div className="flex items-center gap-6">
+        {/* Dark Mode Toggle */}
+        <button
+          onClick={toggleTheme}
+          className="p-2.5 bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 group shadow-sm active:scale-95"
+          title={theme === 'light' ? 'Ativar Modo Escuro' : 'Ativar Modo Claro'}
+        >
+          {theme === 'light' ? (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:rotate-12 transition-transform duration-500">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 group-hover:rotate-90 transition-transform duration-500">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M3 12h2.25m.386-6.364l1.591 1.591M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+          )}
+        </button>
+
         <button 
           onClick={logout}
-          className="text-xs font-bold text-gray-400 hover:text-tertiary transition-all flex items-center gap-2 group"
+          className="text-xs font-bold text-gray-400 hover:text-tertiary transition-all flex items-center gap-2 group dark:hover:text-red-400"
         >
           <span className="border-b border-transparent group-hover:border-tertiary">Encerrar Sessão</span>
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4 translate-y-[0.5px]">
@@ -147,16 +166,16 @@ function Header({ title, onToggleSidebar, isSidebarCollapsed }) {
           </svg>
         </button>
 
-        <div className="h-8 w-[1px] bg-gray-100"></div>
+        <div className="h-8 w-[1px] bg-gray-100 dark:bg-gray-800"></div>
 
         <div className="flex items-center gap-3">
            <div className="flex flex-col text-right">
-              <span className="text-sm font-bold text-gray-800 leading-none">{user?.username}</span>
-              <span className="text-[10px] text-secondary font-bold uppercase mt-1 tracking-tighter">
+              <span className="text-sm font-bold text-gray-800 leading-none dark:text-white">{user?.username}</span>
+              <span className="text-[10px] text-secondary font-bold uppercase mt-1 tracking-tighter dark:text-secondary">
                 {user?.is_staff ? 'Administrador' : 'Visualizador'}
               </span>
            </div>
-           <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary border border-primary/10 shadow-inner">
+           <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary border border-primary/10 shadow-inner dark:bg-primary/20 dark:border-primary/30">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
                 <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
               </svg>
@@ -173,12 +192,12 @@ export default function Layout() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900 antialiased selection:bg-secondary/30">
+    <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900 antialiased selection:bg-secondary/30 dark:bg-gray-950 dark:text-white">
       <Sidebar 
         isCollapsed={isSidebarCollapsed}
       />
 
-      <main className={`flex-1 min-h-screen bg-gray-50 flex flex-col items-center transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'ml-0' : 'ml-72'}`}>
+      <main className={`flex-1 min-h-screen bg-gray-50 flex flex-col items-center transition-all duration-300 ease-in-out dark:bg-gray-950 ${isSidebarCollapsed ? 'ml-0' : 'ml-72'}`}>
         <div className="w-full max-w-[1600px] flex flex-col min-h-screen">
           <Header 
             title={selectedDashboard?.name || "Administração"} 

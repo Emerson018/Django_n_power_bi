@@ -187,30 +187,30 @@ const DashboardManagement = () => {
 
     return (
         <div className="space-y-10">
-            <h2 className="text-3xl font-black text-primary tracking-tight">Gestão de Dashboards</h2>
+            <h2 className="text-3xl font-black text-primary tracking-tight dark:text-white">Gestão de Dashboards</h2>
 
             {/* Formulário de Criação/Edição */}
-            <div className="bg-white p-10 rounded-[40px] shadow-xl shadow-gray-200/40 border border-gray-100/50">
-                <h3 className="text-xl font-bold mb-10 text-gray-800 flex items-center gap-4">
+            <div className="bg-white p-10 rounded-[40px] shadow-xl shadow-gray-200/40 border border-gray-100/50 dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
+                <h3 className="text-xl font-bold mb-10 text-gray-800 flex items-center gap-4 dark:text-white">
                     <div className="w-2.5 h-10 bg-secondary rounded-full shadow-lg shadow-secondary/20"></div>
                     {editingId ? 'Editar Dashboard' : 'Adicionar Novo Dashboard'}
                 </h3>
                 <form onSubmit={handleSubmit} className="space-y-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Nome Identificador</label>
+                            <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Nome Identificador</label>
                             <input 
                                 type="text" placeholder="Ex: Dashboard de Vendas Q1" required
-                                className="w-full px-8 py-5 border border-gray-100 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-300 placeholder:font-medium"
+                                className="w-full px-8 py-5 border border-gray-300 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-500 placeholder:font-medium dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-700"
                                 value={formData.name}
                                 onChange={e => setFormData({...formData, name: e.target.value})}
                             />
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Link de Integração (iFrame)</label>
+                            <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Link de Integração (iFrame)</label>
                             <input 
                                 type="url" placeholder="https://app.powerbi.com/..." required
-                                className="w-full px-8 py-5 border border-gray-100 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-300 placeholder:font-medium"
+                                className="w-full px-8 py-5 border border-gray-300 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-500 placeholder:font-medium dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-700"
                                 value={formData.public_url}
                                 onChange={e => setFormData({...formData, public_url: e.target.value})}
                             />
@@ -218,20 +218,20 @@ const DashboardManagement = () => {
                     </div>
 
                     <div className="space-y-3">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Segmentação / Categoria</label>
+                        <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Segmentação / Categoria</label>
                         <div className="relative">
                             <select 
                                 required
-                                className="w-full px-8 py-5 border border-gray-100 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 appearance-none cursor-pointer"
+                                className="w-full px-8 py-5 border border-gray-300 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 appearance-none cursor-pointer dark:bg-gray-900 dark:border-gray-600 dark:text-white"
                                 value={formData.category_id}
                                 onChange={e => setFormData({...formData, category_id: e.target.value})}
                             >
-                                <option value="" className="font-medium text-gray-400">Vincular a uma categoria...</option>
+                                <option value="" className="font-medium text-gray-500 dark:bg-gray-900">Vincular a uma categoria...</option>
                                 {types.map(t => (
-                                    <option key={t.id} value={t.id} className="font-bold">{t.name}</option>
+                                    <option key={t.id} value={t.id} className="font-bold dark:bg-gray-900 text-gray-700 dark:text-gray-200">{t.name}</option>
                                 ))}
                             </select>
-                            <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-gray-300">
+                            <div className="absolute right-8 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                 </svg>
@@ -240,9 +240,9 @@ const DashboardManagement = () => {
                     </div>
 
                     <div className="space-y-6">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Controle de Privilégios</label>
-                        <div className="p-10 bg-gray-50/50 rounded-[40px] border-2 border-dashed border-gray-200/60">
-                            <div className="mb-8 flex items-center justify-between border-b border-gray-200/40 pb-8">
+                        <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Controle de Privilégios</label>
+                        <div className="p-10 bg-gray-50/50 rounded-[40px] border-2 border-dashed border-gray-300 dark:bg-gray-900/50 dark:border-gray-700">
+                            <div className="mb-8 flex items-center justify-between border-b border-gray-300/40 pb-8">
                                 <label className="flex items-center gap-5 cursor-pointer group">
                                     <div className="relative">
                                         <input 
@@ -251,25 +251,25 @@ const DashboardManagement = () => {
                                             checked={isAllSelected}
                                             onChange={(e) => handleSelectAll(e.target.checked)}
                                         />
-                                        <div className="w-14 h-7 bg-gray-200 rounded-full peer peer-checked:bg-secondary transition-all duration-500 shadow-inner"></div>
+                                        <div className="w-14 h-7 bg-gray-300 rounded-full peer peer-checked:bg-secondary transition-all duration-500 shadow-inner"></div>
                                         <div className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-all duration-500 peer-checked:left-8 shadow-md"></div>
                                     </div>
-                                    <span className="text-[11px] font-black uppercase text-gray-400 peer-checked:text-secondary tracking-[0.25em] transition-colors">Liberar para Todos</span>
+                                    <span className="text-[11px] font-black uppercase text-gray-600 peer-checked:text-secondary tracking-[0.25em] transition-colors dark:text-gray-500">Liberar para Todos</span>
                                 </label>
                             </div>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                 {commonUsers.map(user => (
-                                    <label key={user.id} className="flex items-center gap-4 p-5 rounded-2xl bg-transparent hover:bg-white transition-all cursor-pointer border-2 border-transparent hover:border-gray-50 hover:shadow-xl hover:shadow-gray-200/40 group">
+                                    <label key={user.id} className="flex items-center gap-4 p-5 rounded-2xl bg-transparent hover:bg-white transition-all cursor-pointer border-2 border-transparent hover:border-gray-300 hover:shadow-xl hover:shadow-gray-200/40 group dark:hover:bg-gray-800 dark:hover:border-gray-700">
                                         <div className="relative flex items-center justify-center">
                                             <input 
                                                 type="checkbox"
-                                                className="peer w-6 h-6 rounded-lg border-2 border-gray-200 text-secondary focus:ring-0 transition-all checked:border-secondary"
+                                                className="peer w-6 h-6 rounded-lg border-2 border-gray-300 text-secondary focus:ring-0 transition-all checked:border-secondary"
                                                 checked={formData.allowed_user_ids.includes(user.id)}
                                                 onChange={() => toggleUser(user.id)}
                                             />
                                         </div>
-                                        <span className="text-[11px] font-bold text-gray-400 group-hover:text-gray-900 transition-colors uppercase tracking-widest">{user.username}</span>
+                                        <span className="text-[11px] font-bold text-gray-600 group-hover:text-gray-900 transition-colors uppercase tracking-widest dark:text-gray-400 dark:group-hover:text-white">{user.username}</span>
                                     </label>
                                 ))}
                             </div>
@@ -284,7 +284,7 @@ const DashboardManagement = () => {
                             <button 
                                 type="button" 
                                 onClick={() => {setEditingId(null); setFormData({name: '', public_url: '', category_id: '', allowed_user_ids: []})}}
-                                className="bg-white text-gray-400 font-bold py-5 px-14 rounded-2xl border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all active:scale-95 uppercase tracking-widest text-sm"
+                                className="bg-white text-gray-400 font-bold py-5 px-14 rounded-2xl border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all active:scale-95 uppercase tracking-widest text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500"
                             >
                                 Descartar
                             </button>
@@ -294,27 +294,27 @@ const DashboardManagement = () => {
             </div>
 
             {/* Tabela de Dashboards */}
-            <div className="bg-white shadow-2xl shadow-gray-200/50 border border-gray-100 rounded-[40px] overflow-hidden">
+            <div className="bg-white shadow-2xl shadow-gray-200/50 border border-gray-100 rounded-[40px] overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-100">
-                        <thead className="bg-gray-50/50">
+                    <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
+                        <thead className="bg-gray-50/50 dark:bg-gray-900/50">
                             <tr>
-                                <th className="px-10 py-6 text-left text-[11px] font-black text-gray-400 uppercase tracking-[0.25em]">Dashboard</th>
-                                <th className="px-10 py-6 text-left text-[11px] font-black text-gray-400 uppercase tracking-[0.25em]">Categoria</th>
-                                <th className="px-10 py-6 text-left text-[11px] font-black text-gray-400 uppercase tracking-[0.25em]">Permissões</th>
-                                <th className="px-10 py-6 text-right text-[11px] font-black text-gray-400 uppercase tracking-[0.25em]">Ações</th>
+                                <th className="px-10 py-6 text-left text-[11px] font-black text-gray-700 uppercase tracking-[0.25em] dark:text-gray-500">Dashboard</th>
+                                <th className="px-10 py-6 text-left text-[11px] font-black text-gray-700 uppercase tracking-[0.25em] dark:text-gray-500">Categoria</th>
+                                <th className="px-10 py-6 text-left text-[11px] font-black text-gray-700 uppercase tracking-[0.25em] dark:text-gray-500">Permissões</th>
+                                <th className="px-10 py-6 text-right text-[11px] font-black text-gray-700 uppercase tracking-[0.25em] dark:text-gray-500">Ações</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-50">
+                        <tbody className="bg-white divide-y divide-gray-50 dark:bg-gray-800 dark:divide-gray-700">
                             {dashboards.map((db) => (
                                 <tr 
                                     key={db.id} 
                                     onClick={() => handleEdit(db)}
-                                    className="hover:bg-gray-50/40 transition-all group cursor-pointer"
+                                    className="hover:bg-gray-50/40 transition-all group cursor-pointer dark:hover:bg-gray-900/40"
                                 >
                                     <td className="px-10 py-8 whitespace-nowrap">
-                                        <div className="text-base font-black text-gray-800 tracking-tight group-hover:text-primary transition-colors">{db.name}</div>
-                                        <div className="text-[11px] text-gray-300 truncate max-w-xs mt-2 opacity-60 font-medium uppercase tracking-tighter">{db.public_url}</div>
+                                        <div className="text-base font-black text-gray-800 tracking-tight group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-white/80">{db.name}</div>
+                                        <div className="text-[11px] text-gray-500 truncate max-w-xs mt-2 font-medium uppercase tracking-tighter dark:text-gray-500">{db.public_url}</div>
                                     </td>
                                     <td className="px-10 py-8 whitespace-nowrap">
                                         {db.category_name ? (

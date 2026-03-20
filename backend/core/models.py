@@ -15,6 +15,7 @@ class Role(models.Model):
     Representa as roles do sistema (ex: Admin, GerenteVendas, AnalistaSuporte).
     """
     name = models.CharField(max_length=50, unique=True, help_text="Nome da Role")
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
         return self.name

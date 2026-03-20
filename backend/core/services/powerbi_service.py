@@ -11,6 +11,13 @@ class PowerBIService:
         self.client_id = settings.POWERBI_CLIENT_ID
         self.client_secret = settings.POWERBI_CLIENT_SECRET
         self.tenant_id = settings.POWERBI_TENANT_ID
+
+        if not self.client_id or not self.client_secret or not self.tenant_id:
+            raise ValueError(
+                "PowerBI não está configurado. Configure POWERBI_CLIENT_ID, POWERBI_CLIENT_SECRET e POWERBI_TENANT_ID "
+                "ou use a API mock/sem integração."
+            )
+
         self.authority_url = f"https://login.microsoftonline.com/{self.tenant_id}"
         self.scope = ["https://analysis.windows.net/powerbi/api/.default"]
 

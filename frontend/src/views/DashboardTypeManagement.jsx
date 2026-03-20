@@ -78,20 +78,20 @@ const DashboardTypeManagement = () => {
 
     return (
         <div className="space-y-10">
-            <h2 className="text-3xl font-black text-primary tracking-tight">Categorias de Dashboard</h2>
+            <h2 className="text-3xl font-black text-primary tracking-tight dark:text-white">Categorias de Dashboard</h2>
 
             {/* Formulário */}
-            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 transition-all hover:shadow-md">
-                <h3 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-3">
+            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
+                <h3 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-3 dark:text-white">
                     <div className="w-2.5 h-8 bg-secondary rounded-full"></div>
                     {editingId ? 'Editar Categoria' : 'Adicionar Nova Categoria'}
                 </h3>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 gap-4">
-                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1 italic">Nome da Categoria</label>
+                        <label className="text-xs font-bold text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Nome da Categoria</label>
                         <input 
                             type="text" placeholder="Ex: Financeiro, Marketing, TI" required
-                            className="w-full px-6 py-4 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary transition-all bg-gray-50/50 font-medium"
+                            className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary transition-all bg-white font-medium text-gray-700 placeholder:text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-600"
                             value={formData.name}
                             onChange={e => setFormData({...formData, name: e.target.value})}
                         />
@@ -104,7 +104,7 @@ const DashboardTypeManagement = () => {
                             <button 
                                 type="button" 
                                 onClick={() => {setEditingId(null); setFormData({name:''})}}
-                                className="bg-white text-gray-400 font-bold py-4 px-12 rounded-2xl border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all active:scale-95 uppercase tracking-widest text-sm"
+                                className="bg-white text-gray-400 font-bold py-4 px-12 rounded-2xl border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all active:scale-95 uppercase tracking-widest text-sm dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500"
                             >
                                 Cancelar
                             </button>
@@ -114,19 +114,19 @@ const DashboardTypeManagement = () => {
             </div>
 
             {/* Tabela */}
-            <div className="bg-white shadow-xl shadow-gray-200/40 border border-gray-100 rounded-[32px] overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-100">
-                    <thead className="bg-gray-50/50">
+            <div className="bg-white shadow-xl shadow-gray-200/40 border border-gray-100 rounded-[32px] overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
+                <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
+                    <thead className="bg-gray-50/50 dark:bg-gray-900/50">
                         <tr>
-                            <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Nome da Categoria</th>
-                            <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Ações</th>
+                            <th className="px-8 py-5 text-left text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Nome da Categoria</th>
+                            <th className="px-8 py-5 text-right text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Ações</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-50">
+                    <tbody className="bg-white divide-y divide-gray-50 dark:bg-gray-800 dark:divide-gray-700">
                         {types.map((type) => (
                             <tr key={type.id} className="hover:bg-gray-50/30 transition-colors group">
                                 <td className="px-8 py-6 whitespace-nowrap">
-                                    <span className="text-sm font-black text-gray-800 tracking-tight uppercase">{type.name}</span>
+                                    <span className="text-sm font-black text-gray-800 tracking-tight uppercase dark:text-white">{type.name}</span>
                                 </td>
                                 <td className="px-8 py-6 whitespace-nowrap text-right text-xs font-black space-x-6">
                                     <button 

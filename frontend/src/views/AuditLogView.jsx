@@ -44,12 +44,12 @@ const AuditLogView = () => {
         <div className="space-y-10 animate-in fade-in duration-700 ease-out">
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-primary tracking-tight">Histórico de Auditoria</h1>
-                    <p className="text-gray-400 text-sm font-medium mt-1">Rastreabilidade total das ações realizadas no ecossistema.</p>
+                    <h1 className="text-3xl font-black text-primary tracking-tight dark:text-white">Histórico de Auditoria</h1>
+                    <p className="text-gray-600 text-sm font-medium mt-1 dark:text-gray-300">Rastreabilidade total das ações realizadas no ecossistema.</p>
                 </div>
                 <button 
                     onClick={fetchLogs}
-                    className="p-4 bg-white hover:bg-gray-50 rounded-2xl border border-gray-100 transition-all text-gray-400 hover:text-secondary shadow-sm hover:shadow-md active:scale-95 group"
+                    className="p-4 bg-white hover:bg-gray-50 rounded-2xl border border-gray-100 transition-all text-gray-400 hover:text-secondary shadow-sm hover:shadow-md active:scale-95 group dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500 dark:hover:text-secondary"
                     title="Atualizar Histórico"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 group-hover:rotate-180 transition-transform duration-500">
@@ -58,36 +58,36 @@ const AuditLogView = () => {
                 </button>
             </div>
 
-            <div className="bg-white rounded-[32px] shadow-xl shadow-gray-200/40 border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-[32px] shadow-xl shadow-gray-200/40 border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                        <thead className="bg-gray-50/50">
-                            <tr className="border-b border-gray-100">
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Timestamp</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Operador</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Evento</th>
-                                <th className="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Objeto / Alvo</th>
+                        <thead className="bg-gray-50/50 dark:bg-gray-900/50">
+                            <tr className="border-b border-gray-100 dark:border-gray-700">
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Timestamp</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Operador</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Evento</th>
+                                <th className="px-8 py-5 text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Objeto / Alvo</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-gray-50 dark:divide-gray-700">
                             {logs.map((log) => (
                                 <tr key={log.id} className="hover:bg-gray-50/30 transition-colors group">
                                     <td className="px-8 py-6 whitespace-nowrap">
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-black text-gray-800 tracking-tight">
+                                            <span className="text-sm font-black text-gray-800 tracking-tight dark:text-white">
                                                 {new Date(log.timestamp).toLocaleDateString('pt-BR')}
                                             </span>
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">
+                                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5 dark:text-gray-500">
                                                 {new Date(log.timestamp).toLocaleTimeString('pt-BR')}
                                             </span>
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 whitespace-nowrap">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xs text-primary font-black border border-gray-100 shadow-sm group-hover:scale-110 transition-transform">
+                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xs text-primary font-black border border-gray-100 shadow-sm group-hover:scale-110 transition-transform dark:bg-gray-900 dark:border-gray-700 dark:text-gray-400">
                                                 {log.username?.charAt(0).toUpperCase() || 'S'}
                                             </div>
-                                            <span className="text-sm font-black text-gray-700 tracking-tight">{log.username || 'Sistema'}</span>
+                                            <span className="text-sm font-black text-gray-700 tracking-tight dark:text-gray-200">{log.username || 'Sistema'}</span>
                                         </div>
                                     </td>
                                     <td className="px-8 py-6 whitespace-nowrap">
@@ -97,8 +97,8 @@ const AuditLogView = () => {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex flex-col">
-                                            <span className="text-sm font-black text-gray-800 tracking-tight leading-tight">{log.object_name}</span>
-                                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 opacity-60 italic">{log.object_type}</span>
+                                            <span className="text-sm font-black text-gray-800 tracking-tight leading-tight dark:text-white uppercase">{log.object_name}</span>
+                                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-1 opacity-70 italic dark:text-gray-400">{log.object_type}</span>
                                         </div>
                                     </td>
                                 </tr>

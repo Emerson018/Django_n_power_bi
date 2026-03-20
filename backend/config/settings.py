@@ -9,7 +9,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
-    'jazzmin',
+    # 'jazzmin',  # opcional: remova se o pacote não estiver instalado
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -89,9 +89,9 @@ SIMPLE_JWT = {
 }
 
 # Credenciais do Power BI (Service Principal)
-POWERBI_CLIENT_ID = config('POWERBI_CLIENT_ID')
-POWERBI_CLIENT_SECRET = config('POWERBI_CLIENT_SECRET')
-POWERBI_TENANT_ID = config('POWERBI_TENANT_ID')
+POWERBI_CLIENT_ID = config('POWERBI_CLIENT_ID', default=None)
+POWERBI_CLIENT_SECRET = config('POWERBI_CLIENT_SECRET', default=None)
+POWERBI_TENANT_ID = config('POWERBI_TENANT_ID', default=None)
 # Jazzmin Configuration
 JAZZMIN_SETTINGS = {
     "site_title": "Portal BI Admin",
