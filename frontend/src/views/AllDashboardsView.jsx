@@ -13,7 +13,7 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
         if (onSelectDashboard) {
             onSelectDashboard(db);
         }
-        navigate('/');
+        navigate('/viewer');
     };
 
     // Extrai categorias únicas presentes nos dashboards

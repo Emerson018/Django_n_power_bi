@@ -25,12 +25,12 @@ function Sidebar({ isCollapsed }) {
           <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Menu Principal</span>
         </div>
         <Link
-          to="/dashboards"
+          to="/"
           className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
-            location.pathname === '/dashboards' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
+            location.pathname === '/' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
           }`}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
             <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H18a2.25 2.25 0 01-2.25-2.25v-2.25z" />
           </svg>
           <span className="text-sm font-medium">Dashboards</span>
@@ -48,7 +48,7 @@ function Sidebar({ isCollapsed }) {
                 location.pathname === '/admin/users' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all duration-300">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
               </svg>
               <span className="text-sm font-medium">Usuários</span>
@@ -59,7 +59,7 @@ function Sidebar({ isCollapsed }) {
                 location.pathname === '/admin/dashboards' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 18H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 12h11.25" />
               </svg>
               <span className="text-sm font-medium">Gestão de relatórios</span>
@@ -71,7 +71,7 @@ function Sidebar({ isCollapsed }) {
                 location.pathname === '/admin/dashboard-types' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581a2.25 2.25 0 003.182 0l4.318-4.318a2.25 2.25 0 000-3.182L11.159 3.659A2.25 2.25 0 009.568 3z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
               </svg>
@@ -84,7 +84,7 @@ function Sidebar({ isCollapsed }) {
                 location.pathname === '/admin/audit-logs' ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:rotate-180 transition-all duration-500">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="text-sm font-medium">Histórico</span>
@@ -96,7 +96,7 @@ function Sidebar({ isCollapsed }) {
                 location.pathname === '/admin/panel' ? 'bg-tertiary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
               }`}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-110 group-hover:rotate-90 transition-all duration-500">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.128 1.41-.513M5.106 17.785l1.15-.964m11.49-9.642 1.149-.964M7.501 19.795l.75-1.3m7.5-12.99.75-1.3m-6.06 15.633.126-1.495m1.448-17.142.126-1.495M12 21V19.5M12 4.5V3m4.806 16.527-.126-1.495m-1.448-17.142-.126-1.495m-6.06 15.633-.75-1.3m7.5-12.99-.75-1.3m-4.106 11.892-1.15-.964m11.49-9.642-1.15-.964m-14.095 5.128-1.41-.513m14.095-5.128-1.41-.513M12 12v3m0 0 3-3m-3 3-3-3" />
               </svg>
               <span className="text-sm font-medium">Painel Admin</span>
@@ -172,13 +172,6 @@ export default function Layout() {
   const [selectedDashboard, setSelectedDashboard] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
-  // Seleciona o primeiro dashboard automaticamente se nada estiver selecionado
-  useEffect(() => {
-    if (dashboards.length > 0 && !selectedDashboard) {
-      setSelectedDashboard(dashboards[0]);
-    }
-  }, [dashboards, selectedDashboard]);
-
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900 antialiased selection:bg-secondary/30">
       <Sidebar 
@@ -195,8 +188,8 @@ export default function Layout() {
           
           <div className="p-10 flex-1 flex flex-col">
             <Routes>
-              <Route path="/dashboards" element={<AllDashboardsView onSelectDashboard={setSelectedDashboard} />} />
-              <Route path="/" element={
+              <Route path="/" element={<AllDashboardsView onSelectDashboard={setSelectedDashboard} />} />
+              <Route path="/viewer" element={
                 <PowerBIViewer 
                   embedUrl={selectedDashboard?.public_url} 
                   reportId={selectedDashboard?.id} 
