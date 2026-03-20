@@ -9,17 +9,14 @@ from rest_framework import serializers
 
 # Serializer simples para listagem no portal
 class DashboardPortalSerializer(serializers.ModelSerializer):
-    dashboard_type_names = serializers.SlugRelatedField(
-        many=True,
+    category_name = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name',
-        source='dashboard_types'
+        source='category'
     )
-    dashboard_type_ids = serializers.PrimaryKeyRelatedField(
-        many=True,
-        queryset=DashboardType.objects.all(),
-        source='dashboard_types',
-        required=False
+    category_id = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        source='category'
     )
     allowed_role_names = serializers.SlugRelatedField(
         many=True,
@@ -47,7 +44,7 @@ class DashboardPortalSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Dashboard
-        fields = ('id', 'name', 'public_url', 'dashboard_type_names', 'dashboard_type_ids', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
+        fields = ('id', 'name', 'public_url', 'category_name', 'category_id', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
 
 class DashboardViewSet(viewsets.ReadOnlyModelViewSet):
     """

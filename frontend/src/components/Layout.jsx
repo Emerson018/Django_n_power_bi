@@ -9,7 +9,7 @@ import DjangoAdminView from '../views/DjangoAdminView';
 import AllDashboardsView from '../views/AllDashboardsView';
 import AuditLogView from '../views/AuditLogView';
 
-function Sidebar({ activeId, onSelect, dashboards, isCollapsed }) {
+function Sidebar({ isCollapsed }) {
   const { user } = useAuth();
   const location = useLocation();
 
@@ -35,24 +35,6 @@ function Sidebar({ activeId, onSelect, dashboards, isCollapsed }) {
           </svg>
           <span className="text-sm font-medium">Dashboards</span>
         </Link>
-
-        <div className="px-4 mb-2 mt-6">
-          <span className="text-[10px] font-bold text-white/40 uppercase tracking-[0.2em]">Meus Favoritos</span>
-        </div>
-        {/* Futuramente isso virá de um endpoint específico de favoritos. Atualmente simulando com os primeiros 5. */}
-        {dashboards.slice(0, 5).map((db) => (
-          <Link
-            key={db.id}
-            to="/"
-            onClick={() => onSelect(db.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
-              (activeId === db.id && location.pathname === '/') ? 'bg-secondary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
-            }`}
-          >
-            <div className={`w-2 h-2 rounded-full ${(activeId === db.id && location.pathname === '/') ? 'bg-white' : 'bg-secondary/40 group-hover:bg-secondary'}`}></div>
-            <span className="text-sm font-medium">{db.name}</span>
-          </Link>
-        ))}
 
         {/* Menu Administrativo para Staff */}
         {user?.is_staff && (
@@ -200,9 +182,6 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900 antialiased selection:bg-secondary/30">
       <Sidebar 
-        activeId={selectedDashboard?.id} 
-        onSelect={(id) => setSelectedDashboard(dashboards.find(db => db.id === id))} 
-        dashboards={dashboards}
         isCollapsed={isSidebarCollapsed}
       />
 

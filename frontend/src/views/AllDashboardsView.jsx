@@ -6,7 +6,8 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
     const { dashboards, isLoadingDashboards } = useAuth();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy] = useState('newest'); // 'alphabetical', 'category', 'newest'
+    const [sortBy, setSortBy] = useState('newest'); // 'alphabetical', 'newest'
+    const [selectedCategories, setSelectedCategories] = useState([]); // Array de nomes de categorias selecionadas
 
     const handleAccess = (db) => {
         if (onSelectDashboard) {
@@ -15,26 +16,36 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
         navigate('/');
     };
 
-    // Lógica de filtragem e ordenação balanceada
+    // Extrai categorias únicas presentes nos dashboards
+    const availableCategories = useMemo(() => {
+        const cats = dashboards.map(db => db.category_name).filter(Boolean);
+        return [...new Set(cats)].sort();
+    }, [dashboards]);
+
+    const toggleCategory = (catName) => {
+        if (selectedCategories.includes(catName)) {
+            setSelectedCategories(selectedCategories.filter(c => c !== catName));
+        } else {
+            setSelectedCategories([...selectedCategories, catName]);
+        }
+    };
+
+    // Lógica de filtragem e ordenação combinada
     const filteredAndSortedDashboards = useMemo(() => {
-        let result = dashboards.filter(db => 
-            db.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
+        let result = dashboards.filter(db => {
+            const matchesSearch = db.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(db.category_name);
+            return matchesSearch && matchesCategory;
+        });
 
         if (sortBy === 'alphabetical') {
             result.sort((a, b) => a.name.localeCompare(b.name));
-        } else if (sortBy === 'category') {
-            result.sort((a, b) => {
-                const catA = a.category_name || '';
-                const catB = b.category_name || '';
-                return catA.localeCompare(catB);
-            });
         } else if (sortBy === 'newest') {
             result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         }
 
         return result;
-    }, [dashboards, searchTerm, sortBy]);
+    }, [dashboards, searchTerm, sortBy, selectedCategories]);
 
     if (isLoadingDashboards) {
         return (
@@ -50,7 +61,7 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                 <div className="max-w-xl">
                     <h1 className="text-4xl font-black text-primary tracking-tight leading-none mb-4">Portal de Dashboards</h1>
-                    <p className="text-gray-400 text-lg font-medium leading-relaxed">Explore sua biblioteca de relatórios com filtros avançados e busca inteligente.</p>
+                    <p className="text-gray-400 text-lg font-medium leading-relaxed">Filtre seus relatórios por categoria ou utilize a busca inteligente para encontrar o que precisa.</p>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
@@ -89,7 +100,6 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
                         >
                             <option value="newest">📅 Data de Criação</option>
                             <option value="alphabetical">🔤 Ordem Alfabética</option>
-                            <option value="category">📂 Categoria</option>
                         </select>
                         <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-300">
                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
@@ -100,11 +110,33 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
                 </div>
             </div>
 
+            {/* Filtro de Categorias (Chips) */}
+            <div className="flex flex-col gap-4">
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Filtrar por Categoria:</span>
+                <div className="flex flex-wrap gap-3">
+                    <button 
+                        onClick={() => setSelectedCategories([])}
+                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${selectedCategories.length === 0 ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-300'}`}
+                    >
+                        Todas
+                    </button>
+                    {availableCategories.map(cat => (
+                        <button 
+                            key={cat}
+                            onClick={() => toggleCategory(cat)}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${selectedCategories.includes(cat) ? 'bg-secondary text-white border-secondary shadow-lg shadow-secondary/20 scale-105' : 'bg-white text-gray-400 border-gray-100 hover:border-gray-200'}`}
+                        >
+                            {cat}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                 {filteredAndSortedDashboards.map((db, index) => (
                     <div 
                         key={db.id} 
-                        style={{ animationDelay: `${index * 100}ms` }}
+                        style={{ animationDelay: `${index * 50}ms` }}
                         className="bg-white rounded-[40px] shadow-xl shadow-gray-200/30 border border-gray-100/50 p-8 flex flex-col hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 group overflow-hidden relative animate-in fade-in slide-in-from-bottom-4"
                     >
                         {/* Decorative background element */}
@@ -155,13 +187,13 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                     </div>
-                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest mb-2">Nenhum resultado</h3>
-                    <p className="text-gray-400 font-medium max-w-sm mx-auto leading-relaxed">Não encontramos nenhum relatório para "{searchTerm}". Tente outros termos ou limpe o filtro.</p>
+                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest mb-2">Sem Resultados</h3>
+                    <p className="text-gray-400 font-medium max-w-sm mx-auto leading-relaxed">Não encontramos relatórios que correspondam aos filtros selecionados.</p>
                     <button 
-                        onClick={() => {setSearchTerm(''); setSortBy('newest');}}
+                        onClick={() => {setSearchTerm(''); setSelectedCategories([]);}}
                         className="mt-8 text-xs font-black text-secondary uppercase tracking-widest hover:underline"
                     >
-                        Limpar todos os filtros
+                        Resetar todos os filtros
                     </button>
                 </div>
             )}
