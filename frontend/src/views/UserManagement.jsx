@@ -54,7 +54,6 @@ const UserManagement = () => {
             <div className="flex justify-between items-end">
                 <div>
                     <h2 className="text-3xl font-black text-primary tracking-tight dark:text-white">Gestão de Usuários</h2>
-                    <p className="text-gray-600 text-sm font-medium mt-1 dark:text-gray-400">Gerencie permissões e status dos colaboradores no sistema.</p>
                 </div>
             </div>
 

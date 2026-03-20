@@ -45,7 +45,6 @@ const AuditLogView = () => {
             <div className="flex justify-between items-end">
                 <div>
                     <h1 className="text-3xl font-black text-primary tracking-tight dark:text-white">Histórico de Auditoria</h1>
-                    <p className="text-gray-600 text-sm font-medium mt-1 dark:text-gray-300">Rastreabilidade total das ações realizadas no ecossistema.</p>
                 </div>
                 <button 
                     onClick={fetchLogs}

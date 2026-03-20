@@ -61,7 +61,6 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
                 <div className="max-w-xl">
                     <h1 className="text-4xl font-black text-primary tracking-tight leading-none mb-4 dark:text-white">Portal de Dashboards</h1>
-                    <p className="text-gray-600 text-lg font-medium leading-relaxed dark:text-gray-300">Filtre seus relatórios por categoria ou utilize a busca inteligente para encontrar o que precisa.</p>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
