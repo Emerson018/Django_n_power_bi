@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const AllDashboardsView = ({ onSelectDashboard }) => {
     const { dashboards, isLoadingDashboards } = useAuth();
     const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState('');
+    const [sortBy, setSortBy] = useState('newest'); // 'alphabetical', 'category', 'newest'
 
     const handleAccess = (db) => {
         if (onSelectDashboard) {
@@ -13,59 +15,131 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
         navigate('/');
     };
 
+    // Lógica de filtragem e ordenação balanceada
+    const filteredAndSortedDashboards = useMemo(() => {
+        let result = dashboards.filter(db => 
+            db.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+
+        if (sortBy === 'alphabetical') {
+            result.sort((a, b) => a.name.localeCompare(b.name));
+        } else if (sortBy === 'category') {
+            result.sort((a, b) => {
+                const catA = a.category_name || '';
+                const catB = b.category_name || '';
+                return catA.localeCompare(catB);
+            });
+        } else if (sortBy === 'newest') {
+            result.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+
+        return result;
+    }, [dashboards, searchTerm, sortBy]);
+
     if (isLoadingDashboards) {
         return (
-            <div className="flex flex-col items-center justify-center py-20">
-                <div className="w-12 h-12 border-4 border-gray-100 border-t-secondary rounded-full animate-spin"></div>
-                <p className="mt-4 text-gray-500 font-medium">Carregando sua vitrine...</p>
+            <div className="flex flex-col items-center justify-center py-32">
+                <div className="w-16 h-16 border-4 border-gray-100 border-t-secondary rounded-full animate-spin"></div>
+                <p className="mt-6 text-gray-400 font-black uppercase tracking-widest text-xs">Preparando sua vitrine...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div>
-                <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Portal de Dashboards</h1>
-                <p className="text-gray-500 mt-2">Explore todos os relatórios disponíveis no seu perfil corporativo.</p>
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 ease-out">
+            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+                <div className="max-w-xl">
+                    <h1 className="text-4xl font-black text-primary tracking-tight leading-none mb-4">Portal de Dashboards</h1>
+                    <p className="text-gray-400 text-lg font-medium leading-relaxed">Explore sua biblioteca de relatórios com filtros avançados e busca inteligente.</p>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
+                    {/* Campo de Busca */}
+                    <div className="relative group flex-1 md:w-80">
+                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-secondary transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                            </svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            placeholder="Buscar pelo nome..." 
+                            className="w-full pl-14 pr-12 py-4 bg-white border border-gray-100 rounded-2xl shadow-sm focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all font-bold text-gray-700 placeholder:text-gray-300 placeholder:font-medium"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        {searchTerm && (
+                            <button 
+                                onClick={() => setSearchTerm('')}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-300 hover:text-red-400 transition-colors"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Filtros de Ordenação */}
+                    <div className="relative md:w-64">
+                        <select 
+                            className="w-full px-8 py-4 bg-white border border-gray-100 rounded-2xl shadow-sm focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all font-bold text-xs uppercase tracking-widest text-gray-500 appearance-none cursor-pointer pr-12"
+                            value={sortBy}
+                            onChange={(e) => setSortBy(e.target.value)}
+                        >
+                            <option value="newest">📅 Data de Criação</option>
+                            <option value="alphabetical">🔤 Ordem Alfabética</option>
+                            <option value="category">📂 Categoria</option>
+                        </select>
+                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-300">
+                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {dashboards.map((db) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {filteredAndSortedDashboards.map((db, index) => (
                     <div 
                         key={db.id} 
-                        className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 group overflow-hidden relative"
+                        style={{ animationDelay: `${index * 100}ms` }}
+                        className="bg-white rounded-[40px] shadow-xl shadow-gray-200/30 border border-gray-100/50 p-8 flex flex-col hover:shadow-2xl hover:shadow-primary/10 transition-all duration-500 group overflow-hidden relative animate-in fade-in slide-in-from-bottom-4"
                     >
                         {/* Decorative background element */}
-                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+                        <div className="absolute -right-6 -top-6 w-32 h-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-all duration-700"></div>
                         
-                        <div className="flex justify-between items-start mb-4 relative z-10">
+                        <div className="flex justify-between items-start mb-6 relative z-10">
                             <div className="flex flex-wrap gap-2">
-                                {db.dashboard_type_names?.length > 0 ? (
-                                    db.dashboard_type_names.map(type => (
-                                        <span key={type} className="px-2.5 py-1 bg-gray-50 text-gray-500 text-[10px] font-bold rounded-lg uppercase tracking-wider border border-gray-100 shadow-sm">
-                                            {type}
-                                        </span>
-                                    ))
+                                {db.category_name ? (
+                                    <span className="px-3 py-1 bg-secondary/5 text-secondary text-[10px] font-black rounded-lg uppercase tracking-widest border border-secondary/10 shadow-sm">
+                                        {db.category_name}
+                                    </span>
                                 ) : (
-                                    <span className="px-2.5 py-1 bg-gray-50 text-gray-400 text-[10px] font-bold rounded-lg uppercase tracking-wider italic">
+                                    <span className="px-3 py-1 bg-gray-50 text-gray-400 text-[10px] font-black rounded-lg uppercase tracking-widest border border-gray-100/50">
                                         Geral
                                     </span>
                                 )}
                             </div>
                         </div>
 
-                        <h3 className="text-xl font-bold text-primary mb-2 line-clamp-1 group-hover:text-primary/80 transition-colors relative z-10">
+                        <h3 className="text-2xl font-black text-primary mb-2 line-clamp-2 group-hover:text-primary/70 transition-colors relative z-10 tracking-tight leading-tight">
                             {db.name}
                         </h3>
+                        {db.created_at && (
+                            <span className="text-[10px] text-gray-300 font-bold uppercase tracking-widest mb-6 relative z-10">
+                                Publicado em {new Date(db.created_at).toLocaleDateString('pt-BR')}
+                            </span>
+                        )}
                         
-                        <div className="mt-auto pt-6 flex flex-col gap-3 relative z-10">
+                        <div className="mt-auto pt-4 relative z-10">
                             <button 
                                 onClick={() => handleAccess(db)}
-                                className="w-full flex items-center justify-center gap-2 py-3 bg-secondary text-white rounded-xl font-bold hover:bg-secondary/90 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg shadow-secondary/20"
+                                className="w-full flex items-center justify-center gap-3 py-4 bg-secondary text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-secondary/90 hover:shadow-2xl hover:shadow-secondary/30 active:scale-95 transition-all group/btn"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.644C3.301 8.844 6.136 6.5 12 6.5c5.863 0 8.7 2.344 9.964 5.822a1.012 1.012 0 010 .644C20.699 15.156 17.863 17.5 12 17.5c-5.863 0-8.7-2.344-9.964-5.822z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                                 </svg>
                                 Acessar Relatório
                             </button>
@@ -74,15 +148,21 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
                 ))}
             </div>
 
-            {dashboards.length === 0 && (
-                <div className="bg-white rounded-2xl border border-dashed border-gray-200 p-20 text-center">
-                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8 text-gray-300">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            {filteredAndSortedDashboards.length === 0 && (
+                <div className="bg-white rounded-[40px] border-4 border-dashed border-gray-100 p-24 text-center">
+                    <div className="w-20 h-20 bg-white shadow-xl shadow-gray-200/40 rounded-3xl flex items-center justify-center mx-auto mb-6 text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-10 h-10">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                     </div>
-                    <h3 className="text-lg font-bold text-gray-900">Nenhum dashboard encontrado</h3>
-                    <p className="text-gray-500 mt-1 max-w-xs mx-auto">Você ainda não tem permissão para visualizar nenhum relatório. Entre em contato com o suporte.</p>
+                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest mb-2">Nenhum resultado</h3>
+                    <p className="text-gray-400 font-medium max-w-sm mx-auto leading-relaxed">Não encontramos nenhum relatório para "{searchTerm}". Tente outros termos ou limpe o filtro.</p>
+                    <button 
+                        onClick={() => {setSearchTerm(''); setSortBy('newest');}}
+                        className="mt-8 text-xs font-black text-secondary uppercase tracking-widest hover:underline"
+                    >
+                        Limpar todos os filtros
+                    </button>
                 </div>
             )}
         </div>

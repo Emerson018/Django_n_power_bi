@@ -24,17 +24,16 @@ class DashboardSerializer(serializers.ModelSerializer):
         source='allowed_roles',
         required=False
     )
-    dashboard_type_names = serializers.SlugRelatedField(
-        many=True,
+    category_name = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name',
-        source='dashboard_types'
+        source='category'
     )
-    dashboard_type_ids = serializers.PrimaryKeyRelatedField(
-        many=True,
+    category_id = serializers.PrimaryKeyRelatedField(
         queryset=DashboardType.objects.all(),
-        source='dashboard_types',
-        required=False
+        source='category',
+        required=False,
+        allow_null=True
     )
     allowed_user_ids = serializers.PrimaryKeyRelatedField(
         many=True,
@@ -50,7 +49,7 @@ class DashboardSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Dashboard
-        fields = ('id', 'name', 'public_url', 'dashboard_type_names', 'dashboard_type_ids', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
+        fields = ('id', 'name', 'public_url', 'category_name', 'category_id', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:

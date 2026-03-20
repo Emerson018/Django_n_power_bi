@@ -24,14 +24,10 @@ class DashboardTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Dashboard)
 class DashboardAdmin(admin.ModelAdmin):
-    list_display = ('name', 'get_types', 'created_at')
+    list_display = ('name', 'category', 'created_at')
     search_fields = ('name',)
-
-    def get_types(self, obj):
-        return ", ".join([t.name for t in obj.dashboard_types.all()])
-    get_types.short_description = 'Categorias'
-    filter_horizontal = ('allowed_roles', 'allowed_users', 'dashboard_types')
-    list_filter = ('dashboard_types', 'created_at')
+    filter_horizontal = ('allowed_roles', 'allowed_users')
+    list_filter = ('category', 'created_at')
 
 @admin.register(AuditLog)
 class AuditLogAdmin(admin.ModelAdmin):

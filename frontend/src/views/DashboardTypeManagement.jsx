@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import DeleteConfirmModal from '../components/DeleteConfirmModal';
 
 const DashboardTypeManagement = () => {
     const { api } = useAuth();
@@ -9,6 +10,10 @@ const DashboardTypeManagement = () => {
     const [formData, setFormData] = useState({ 
         name: ''
     });
+
+    // Estados para o Modal de Exclusão
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [idToDelete, setIdToDelete] = useState(null);
 
     const fetchTypes = async () => {
         try {
@@ -44,12 +49,23 @@ const DashboardTypeManagement = () => {
         });
     };
 
-    const handleDelete = async (id) => {
-        if (!window.confirm("Deseja realmente excluir este tipo? Isso pode afetar dashboards vinculados.")) return;
+    // Abre o modal de confirmação
+    const handleDeleteClick = (id) => {
+        setIdToDelete(id);
+        setIsDeleteModalOpen(true);
+    };
+
+    // Executa a exclusão de fato
+    const handleConfirmDelete = async () => {
+        if (!idToDelete) return;
+
         try {
-            await api.delete(`/admin/dashboard-types/${id}/`);
+            await api.delete(`/admin/dashboard-types/${idToDelete}/`);
+            setIsDeleteModalOpen(false);
+            setIdToDelete(null);
             fetchTypes();
         } catch (error) {
+            console.error("Erro ao excluir tipo:", error);
             alert("Erro ao excluir tipo");
         }
     };
@@ -58,35 +74,37 @@ const DashboardTypeManagement = () => {
         fetchTypes();
     }, []);
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Carregando tipos...</div>;
+    if (loading) return <div className="p-8 text-center text-gray-500 font-medium italic">Carregando categorias...</div>;
 
     return (
-        <div className="space-y-8">
-            <h2 className="text-2xl font-bold text-primary">Categorias de Dashboard</h2>
+        <div className="space-y-10">
+            <h2 className="text-3xl font-black text-primary tracking-tight">Categorias de Dashboard</h2>
 
             {/* Formulário */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                <h3 className="text-lg font-semibold mb-4">
+            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 transition-all hover:shadow-md">
+                <h3 className="text-xl font-bold mb-8 text-gray-800 flex items-center gap-3">
+                    <div className="w-2.5 h-8 bg-secondary rounded-full"></div>
                     {editingId ? 'Editar Categoria' : 'Adicionar Nova Categoria'}
                 </h3>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 gap-4">
+                        <label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1 italic">Nome da Categoria</label>
                         <input 
-                            type="text" placeholder="Nome da Categoria (ex: Financeiro)" required
-                            className="px-4 py-2 border rounded-md focus:ring-secondary focus:border-secondary transition-all"
+                            type="text" placeholder="Ex: Financeiro, Marketing, TI" required
+                            className="w-full px-6 py-4 border border-gray-100 rounded-2xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary transition-all bg-gray-50/50 font-medium"
                             value={formData.name}
                             onChange={e => setFormData({...formData, name: e.target.value})}
                         />
                     </div>
-                    <div className="flex gap-2">
-                        <button type="submit" className="bg-secondary text-white font-bold py-2 px-8 rounded-md hover:bg-secondary/90 transition-all shadow-lg shadow-secondary/20">
+                    <div className="flex gap-4">
+                        <button type="submit" className="bg-secondary text-white font-black py-4 px-12 rounded-2xl hover:bg-secondary/90 transition-all shadow-xl shadow-secondary/20 active:scale-95 uppercase tracking-widest text-sm">
                             {editingId ? 'Atualizar' : 'Cadastrar'}
                         </button>
                         {editingId && (
                             <button 
                                 type="button" 
                                 onClick={() => {setEditingId(null); setFormData({name:''})}}
-                                className="bg-gray-100 text-gray-600 font-bold py-2 px-8 rounded-md hover:bg-gray-200 transition-all"
+                                className="bg-white text-gray-400 font-bold py-4 px-12 rounded-2xl border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all active:scale-95 uppercase tracking-widest text-sm"
                             >
                                 Cancelar
                             </button>
@@ -96,30 +114,32 @@ const DashboardTypeManagement = () => {
             </div>
 
             {/* Tabela */}
-            <div className="bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+            <div className="bg-white shadow-xl shadow-gray-200/40 border border-gray-100 rounded-[32px] overflow-hidden">
+                <table className="min-w-full divide-y divide-gray-100">
+                    <thead className="bg-gray-50/50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                            <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Nome da Categoria</th>
+                            <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Ações</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-50">
                         {types.map((type) => (
-                            <tr key={type.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className="text-sm font-bold text-gray-900">{type.name}</span>
+                            <tr key={type.id} className="hover:bg-gray-50/30 transition-colors group">
+                                <td className="px-8 py-6 whitespace-nowrap">
+                                    <span className="text-sm font-black text-gray-800 tracking-tight uppercase">{type.name}</span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <td className="px-8 py-6 whitespace-nowrap text-right text-xs font-black space-x-6">
                                     <button 
+                                        type="button"
                                         onClick={() => handleEdit(type)}
-                                        className="text-primary hover:text-primary/80 font-bold mr-4"
+                                        className="text-primary hover:text-primary/70 transition-all uppercase tracking-[0.15em]"
                                     >
                                         Editar
                                     </button>
                                     <button 
-                                        onClick={() => handleDelete(type.id)}
-                                        className="text-red-500 hover:text-red-600 font-bold"
+                                        type="button"
+                                        onClick={() => handleDeleteClick(type.id)}
+                                        className="text-red-400 hover:text-red-600 transition-all uppercase tracking-[0.15em]"
                                     >
                                         Excluir
                                     </button>
@@ -128,7 +148,21 @@ const DashboardTypeManagement = () => {
                         ))}
                     </tbody>
                 </table>
+                {types.length === 0 && (
+                    <div className="p-24 text-center bg-gray-50/30">
+                        <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Nenhuma categoria cadastrada</p>
+                    </div>
+                )}
             </div>
+
+            {/* Modal de Confirmação customizado */}
+            <DeleteConfirmModal 
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                onConfirm={handleConfirmDelete}
+                title="Excluir Categoria"
+                message="Deseja realmente excluir esta categoria? Isso pode afetar os relatórios que estão vinculados a ela."
+            />
         </div>
     );
 };

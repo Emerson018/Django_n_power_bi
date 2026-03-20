@@ -32,10 +32,6 @@ const UserManagement = () => {
         }
     };
 
-    const removeCurrentRoles = async (userId) => {
-        // O DRF por padrão vai sobrescrever ao enviar role_ids, então só precisamos patch
-    };
-
     const updateUserRole = async (userId, roleId) => {
         try {
             await api.patch(`/admin/users/${userId}/`, {
@@ -51,66 +47,80 @@ const UserManagement = () => {
         fetchData();
     }, []);
 
-    if (loading) return <div className="p-8 text-center">Carregando usuários...</div>;
+    if (loading) return <div className="p-8 text-center text-gray-500 font-medium italic">Carregando usuários...</div>;
 
     return (
-        <div className="p-6">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-primary">Gestão de Usuários</h2>
+        <div className="space-y-10 animate-in fade-in duration-700">
+            <div className="flex justify-between items-end">
+                <div>
+                    <h2 className="text-3xl font-black text-primary tracking-tight">Gestão de Usuários</h2>
+                    <p className="text-gray-400 text-sm font-medium mt-1">Gerencie permissões e status dos colaboradores no sistema.</p>
+                </div>
             </div>
 
-            <div className="bg-white shadow-sm border border-gray-100 rounded-xl overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-mail</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Perfil / Role</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {users.map((user) => (
-                            <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="flex items-center">
-                                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold mr-3">
-                                            {user.username.charAt(0).toUpperCase()}
-                                        </div>
-                                        <span className="text-sm font-medium text-gray-900">{user.username}</span>
-                                    </div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.email}</td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <select 
-                                        className="text-sm border-gray-200 rounded-md focus:ring-secondary focus:border-secondary transition-all"
-                                        value={user.role_ids?.[0] || ""}
-                                        onChange={(e) => updateUserRole(user.id, e.target.value)}
-                                    >
-                                        <option value="">Sem Role</option>
-                                        {roles.map(role => (
-                                            <option key={role.id} value={role.id}>{role.name}</option>
-                                        ))}
-                                    </select>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                        {user.is_active ? 'Ativo' : 'Inativo'}
-                                    </span>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button 
-                                        onClick={() => toggleUserStatus(user.id)}
-                                        className={`${user.is_active ? 'text-tertiary hover:text-tertiary/80' : 'text-secondary hover:text-secondary/80'} font-semibold`}
-                                    >
-                                        {user.is_active ? 'Desativar' : 'Ativar'}
-                                    </button>
-                                </td>
+            <div className="bg-white shadow-xl shadow-gray-200/40 border border-gray-100 rounded-[32px] overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-100">
+                        <thead className="bg-gray-50/50">
+                            <tr>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Usuário / Perfil</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">E-mail</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Cargo / Role</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Status</th>
+                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Ações</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-50">
+                            {users.map((user) => (
+                                <tr key={user.id} className="hover:bg-gray-50/30 transition-colors group">
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <div className="flex items-center">
+                                            <div className="h-12 w-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary font-black text-lg mr-4 border border-primary/10 shadow-sm group-hover:scale-110 transition-transform">
+                                                {user.username.charAt(0).toUpperCase()}
+                                            </div>
+                                            <div>
+                                                <div className="text-sm font-black text-gray-800 tracking-tight">{user.username}</div>
+                                                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">ID: #{String(user.id).padStart(3, '0')}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap text-sm text-gray-500 font-medium">{user.email}</td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <div className="relative inline-block w-48">
+                                            <select 
+                                                className="w-full text-xs font-bold uppercase tracking-wider py-2.5 px-4 pr-10 border-gray-100 bg-gray-50/50 rounded-xl focus:ring-4 focus:ring-secondary/10 focus:border-secondary transition-all appearance-none cursor-pointer"
+                                                value={user.role_ids?.[0] || ""}
+                                                onChange={(e) => updateUserRole(user.id, e.target.value)}
+                                            >
+                                                {roles.map(role => (
+                                                    <option key={role.id} value={role.id}>{role.name}</option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap">
+                                        <span className={`px-3 py-1.5 inline-flex text-[10px] font-black leading-none rounded-lg border uppercase tracking-widest shadow-sm ${user.is_active ? 'bg-green-50 text-green-600 border-green-100' : 'bg-red-50 text-red-600 border-red-100'}`}>
+                                            {user.is_active ? 'Ativo' : 'Inativo'}
+                                        </span>
+                                    </td>
+                                    <td className="px-8 py-6 whitespace-nowrap text-right text-xs font-black">
+                                        <button 
+                                            onClick={() => toggleUserStatus(user.id)}
+                                            className={`transition-all uppercase tracking-widest ${user.is_active ? 'text-red-400 hover:text-red-600' : 'text-green-500 hover:text-green-600 font-bold'}`}
+                                        >
+                                            {user.is_active ? 'Desativar' : 'Ativar'}
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

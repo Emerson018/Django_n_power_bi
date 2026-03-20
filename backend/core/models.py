@@ -34,7 +34,7 @@ class Dashboard(models.Model):
     """
     name = models.CharField(max_length=100, help_text="Nome amigável do Relatório")
     public_url = models.URLField(max_length=500, help_text="Link público (iFrame) do Power BI")
-    dashboard_types = models.ManyToManyField(DashboardType, related_name='dashboards', blank=True)
+    category = models.ForeignKey(DashboardType, on_delete=models.SET_NULL, null=True, blank=True, related_name='dashboards')
     allowed_roles = models.ManyToManyField(Role, related_name='dashboards', blank=True)
     allowed_users = models.ManyToManyField(User, related_name='specific_dashboards', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

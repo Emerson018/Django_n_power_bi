@@ -123,15 +123,10 @@ function Sidebar({ activeId, onSelect, dashboards, isCollapsed }) {
         )}
       </nav>
       
-      <div className={`p-6 bg-white/5 mt-auto transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-white font-bold ring-4 ring-white/10 shadow-lg">
-             {user?.username?.charAt(0).toUpperCase()}
-          </div>
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-bold truncate">{user?.first_name}</span>
-            <span className="text-[10px] text-gray-400 uppercase tracking-tighter">Professional Plan</span>
-          </div>
+      <div className={`p-8 mt-auto border-t border-white/10 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
+        {/* Logo Hospital Ernesto Dornelles */}
+        <div className="flex justify-center">
+          <img src="/logo_hed.png" alt="Hospital Ernesto Dornelles Logo" className="w-full max-w-[140px] opacity-80 hover:opacity-100 transition-opacity" />
         </div>
       </div>
     </aside>
