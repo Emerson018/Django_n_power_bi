@@ -17,10 +17,17 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
         navigate('/viewer');
     };
 
-    // Extrai categorias únicas presentes nos dashboards
+    // Extrai categorias únicas presentes nos dashboards com suas cores
     const availableCategories = useMemo(() => {
-        const cats = dashboards.map(db => db.category_name).filter(Boolean);
-        return [...new Set(cats)].sort();
+        const catsMap = new Map();
+        dashboards.forEach(db => {
+            if (db.category_name && !catsMap.has(db.category_name)) {
+                catsMap.set(db.category_name, db.category_color || '#64748b');
+            }
+        });
+        return Array.from(catsMap.entries())
+            .map(([name, color]) => ({ name, color }))
+            .sort((a, b) => a.name.localeCompare(b.name));
     }, [dashboards]);
 
     const toggleCategory = (catName) => {
@@ -34,7 +41,8 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
     // Lógica de filtragem e ordenação combinada
     const filteredAndSortedDashboards = useMemo(() => {
         let result = dashboards.filter(db => {
-            const matchesSearch = db.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const searchLower = searchTerm.toLowerCase();
+            const matchesSearch = db.name.toLowerCase().includes(searchLower);
             const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(db.category_name);
             return matchesSearch && matchesCategory;
         });
@@ -65,17 +73,22 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
                 <div className="flex flex-wrap gap-3">
                     <button 
                         onClick={() => setSelectedCategories([])}
-                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${selectedCategories.length === 0 ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400'}`}
+                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${selectedCategories.length === 0 ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400'}`}
                     >
                         Todas
                     </button>
                     {availableCategories.map(cat => (
                         <button 
-                            key={cat}
-                            onClick={() => toggleCategory(cat)}
-                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${selectedCategories.includes(cat) ? 'bg-secondary text-white border-secondary shadow-lg shadow-secondary/20 scale-105' : 'bg-white text-gray-600 border-gray-300 hover:border-gray-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400'}`}
+                            key={cat.name}
+                            onClick={() => toggleCategory(cat.name)}
+                            className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${selectedCategories.includes(cat.name) ? 'text-white shadow-lg scale-105' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400'}`}
+                            style={{ 
+                                backgroundColor: selectedCategories.includes(cat.name) ? cat.color : '',
+                                borderColor: selectedCategories.includes(cat.name) ? cat.color : '',
+                                boxShadow: selectedCategories.includes(cat.name) ? `0 10px 15px -3px ${cat.color}40` : ''
+                            }}
                         >
-                            {cat}
+                            {cat.name}
                         </button>
                     ))}
                 </div>
@@ -94,7 +107,14 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
                         <div className="flex justify-between items-start mb-6 relative z-10">
                             <div className="flex flex-wrap gap-2">
                                 {db.category_name ? (
-                                    <span className="px-3 py-1 bg-secondary/5 text-secondary text-[10px] font-black rounded-lg uppercase tracking-widest border border-secondary/10 shadow-sm">
+                                    <span 
+                                        className="px-3 py-1 text-[10px] font-black rounded-lg uppercase tracking-widest border shadow-sm"
+                                        style={{ 
+                                            backgroundColor: `${db.category_color || '#64748b'}15`,
+                                            color: db.category_color || '#64748b',
+                                            borderColor: `${db.category_color || '#64748b'}25`
+                                        }}
+                                    >
                                         {db.category_name}
                                     </span>
                                 ) : (

@@ -14,6 +14,11 @@ class DashboardPortalSerializer(serializers.ModelSerializer):
         slug_field='name',
         source='category'
     )
+    category_color = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='color',
+        source='category'
+    )
     category_id = serializers.PrimaryKeyRelatedField(
         read_only=True,
         source='category'
@@ -44,7 +49,7 @@ class DashboardPortalSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Dashboard
-        fields = ('id', 'name', 'public_url', 'category_name', 'category_id', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
+        fields = ('id', 'name', 'public_url', 'category_name', 'category_id', 'category_color', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
 
 class DashboardViewSet(viewsets.ReadOnlyModelViewSet):
     """

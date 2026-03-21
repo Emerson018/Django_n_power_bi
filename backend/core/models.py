@@ -25,6 +25,7 @@ class DashboardType(models.Model):
     Representa os tipos/categorias de dashboards (ex: Financeiro, Médico).
     """
     name = models.CharField(max_length=100, unique=True, help_text="Nome do Tipo de Dashboard")
+    color = models.CharField(max_length=7, default="#64748b", help_text="Cor hexadecimal para a categoria")
 
     def __str__(self):
         return self.name

@@ -9,7 +9,7 @@ from rest_framework import serializers
 class DashboardTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = DashboardType
-        fields = ('id', 'name')
+        fields = ('id', 'name', 'color')
 
 # Serializers Adicionais para Gestão
 class DashboardSerializer(serializers.ModelSerializer):
@@ -28,6 +28,11 @@ class DashboardSerializer(serializers.ModelSerializer):
     category_name = serializers.SlugRelatedField(
         read_only=True,
         slug_field='name',
+        source='category'
+    )
+    category_color = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='color',
         source='category'
     )
     category_id = serializers.PrimaryKeyRelatedField(
@@ -50,7 +55,7 @@ class DashboardSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Dashboard
-        fields = ('id', 'name', 'public_url', 'category_name', 'category_id', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
+        fields = ('id', 'name', 'public_url', 'category_name', 'category_id', 'category_color', 'allowed_role_names', 'allowed_role_ids', 'allowed_user_ids', 'allowed_user_names', 'created_at')
 
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
