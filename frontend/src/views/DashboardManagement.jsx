@@ -197,7 +197,7 @@ const DashboardManagement = () => {
                 <form onSubmit={handleSubmit} className="space-y-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Nome Identificador</label>
+                            <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Título dashboard</label>
                             <input 
                                 type="text" placeholder="Ex: Dashboard de Vendas Q1" required
                                 className="w-full px-8 py-5 border border-gray-300 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-500 placeholder:font-medium dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-700"
@@ -206,7 +206,7 @@ const DashboardManagement = () => {
                             />
                         </div>
                         <div className="space-y-3">
-                            <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Link de Integração (iFrame)</label>
+                            <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Link Dashboard</label>
                             <input 
                                 type="url" placeholder="https://app.powerbi.com/..." required
                                 className="w-full px-8 py-5 border border-gray-300 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-500 placeholder:font-medium dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-700"
@@ -217,7 +217,7 @@ const DashboardManagement = () => {
                     </div>
 
                     <div className="space-y-3">
-                        <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Segmentação / Categoria</label>
+                        <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Categoria</label>
                         <div className="relative">
                             <select 
                                 required
@@ -253,7 +253,7 @@ const DashboardManagement = () => {
                                         <div className="w-14 h-7 bg-gray-300 rounded-full peer peer-checked:bg-secondary transition-all duration-500 shadow-inner"></div>
                                         <div className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-all duration-500 peer-checked:left-8 shadow-md"></div>
                                     </div>
-                                    <span className="text-[11px] font-black uppercase text-gray-600 peer-checked:text-secondary tracking-[0.25em] transition-colors dark:text-gray-500">Liberar para Todos</span>
+                                    <span className="text-[11px] font-black uppercase text-gray-600 peer-checked:text-secondary tracking-[0.25em] transition-colors dark:text-gray-500">Liberar para todos usuários</span>
                                 </label>
                             </div>
 
@@ -292,8 +292,13 @@ const DashboardManagement = () => {
                 </form>
             </div>
 
-            {/* Tabela de Dashboards */}
-            <div className="bg-white shadow-2xl shadow-gray-200/50 border border-gray-100 rounded-[40px] overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
+            {/* Lista de Relatórios */}
+            <div className="space-y-6">
+                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-4 dark:text-white">
+                    <div className="w-2.5 h-10 bg-primary rounded-full shadow-lg shadow-primary/20"></div>
+                    Relatórios Cadastrados
+                </h3>
+                <div className="bg-white shadow-2xl shadow-gray-200/50 border border-gray-100 rounded-[40px] overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-100 dark:divide-gray-700">
                         <thead className="bg-gray-50/50 dark:bg-gray-900/50">
@@ -321,7 +326,14 @@ const DashboardManagement = () => {
                                     </td>
                                     <td className="px-10 py-8 whitespace-nowrap">
                                         {db.category_name ? (
-                                            <span className="px-4 py-1.5 rounded-xl bg-secondary/5 text-secondary text-[11px] font-black uppercase tracking-widest border border-secondary/10 shadow-sm">
+                                            <span 
+                                                className="px-4 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-widest border shadow-sm"
+                                                style={{ 
+                                                    backgroundColor: `${db.category_color || '#64748b'}15`,
+                                                    color: db.category_color || '#64748b',
+                                                    borderColor: `${db.category_color || '#64748b'}25`
+                                                }}
+                                            >
                                                 {db.category_name}
                                             </span>
                                         ) : (
@@ -355,6 +367,7 @@ const DashboardManagement = () => {
                         <p className="text-gray-300 font-black uppercase tracking-[0.3em] text-[10px]">Vault Vazio</p>
                     </div>
                 )}
+                </div>
             </div>
 
             {/* Modal de Confirmação customizado */}

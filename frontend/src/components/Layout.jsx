@@ -7,7 +7,6 @@ import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import UserManagement from '../views/UserManagement';
 import DashboardManagement from '../views/DashboardManagement';
 import DashboardTypeManagement from '../views/DashboardTypeManagement';
-import DjangoAdminView from '../views/DjangoAdminView';
 import AllDashboardsView from '../views/AllDashboardsView';
 import AuditLogView from '../views/AuditLogView';
 
@@ -90,18 +89,6 @@ function Sidebar({ isCollapsed }) {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span className="text-sm font-medium">Histórico</span>
-            </Link>
-            
-            <Link
-              to="/admin/panel"
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${
-                location.pathname === '/admin/panel' ? 'bg-tertiary text-white shadow-lg' : 'hover:bg-white/5 text-gray-300'
-              }`}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 opacity-70 group-hover:opacity-100 group-hover:scale-110 group-hover:rotate-90 transition-all duration-500">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.128 1.41-.513M5.106 17.785l1.15-.964m11.49-9.642 1.149-.964M7.501 19.795l.75-1.3m7.5-12.99.75-1.3m-6.06 15.633.126-1.495m1.448-17.142.126-1.495M12 21V19.5M12 4.5V3m4.806 16.527-.126-1.495m-1.448-17.142-.126-1.495m-6.06 15.633-.75-1.3m7.5-12.99-.75-1.3m-4.106 11.892-1.15-.964m11.49-9.642-1.15-.964m-14.095 5.128-1.41-.513m14.095-5.128-1.41-.513M12 12v3m0 0 3-3m-3 3-3-3" />
-              </svg>
-              <span className="text-sm font-medium">Painel Admin</span>
             </Link>
           </div>
         )}
@@ -249,6 +236,24 @@ export default function Layout() {
   const [selectedDashboard, setSelectedDashboard] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const location = useLocation();
+  const { user } = useAuth();
+
+  // Konami Code Handler (Hidden Access to Django Admin)
+  useEffect(() => {
+    let input = [];
+    const secret = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+
+    const handler = (e) => {
+      input.push(e.keyCode);
+      input = input.slice(-10);
+      if (input.join(',') === secret.join(',') && user?.is_staff) {
+        window.open('http://localhost:8000/admin/', '_blank');
+      }
+    };
+
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [user]);
 
   // Restaurar dashboard selecionado do localStorage ao carregar a lista
   useEffect(() => {
@@ -288,8 +293,6 @@ export default function Layout() {
       title = "Gestão de Categorias";
     } else if (path === '/admin/audit-logs') {
       title = "Histórico de Auditoria";
-    } else if (path === '/admin/panel') {
-      title = "Painel Administrativo";
     }
 
     return { title, subtitle };
@@ -327,7 +330,6 @@ export default function Layout() {
               <Route path="/admin/dashboards" element={<DashboardManagement />} />
               <Route path="/admin/dashboard-types" element={<DashboardTypeManagement />} />
               <Route path="/admin/audit-logs" element={<AuditLogView />} />
-              <Route path="/admin/panel" element={<DjangoAdminView />} />
             </Routes>
           </div>
         </div>

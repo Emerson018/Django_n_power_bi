@@ -62,8 +62,8 @@ const UserManagement = () => {
                                 <th className="px-8 py-5 text-left text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Usuário / Perfil</th>
                                 <th className="px-8 py-5 text-left text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">E-mail</th>
                                 <th className="px-8 py-5 text-left text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Cargo / Role</th>
-                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Status</th>
-                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Ações</th>
+                                <th className="px-8 py-5 text-left text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Relatórios Acessíveis</th>
+                                <th className="px-8 py-5 text-right text-[10px] font-black text-gray-700 uppercase tracking-[0.2em] dark:text-gray-500">Ativar / Desativar</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-50 dark:bg-gray-800 dark:divide-gray-700">
@@ -99,18 +99,34 @@ const UserManagement = () => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td className="px-8 py-6 whitespace-nowrap">
-                                        <span className={`px-3 py-1.5 inline-flex text-[10px] font-black leading-none rounded-lg border uppercase tracking-widest shadow-sm ${user.is_active ? 'bg-green-50 text-green-600 border-green-100 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800' : 'bg-red-50 text-red-600 border-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'}`}>
-                                            {user.is_active ? 'Ativo' : 'Inativo'}
-                                        </span>
+                                    <td className="px-8 py-6 min-w-[250px]">
+                                        <div className="flex flex-wrap gap-1.5 max-h-24 overflow-y-auto pr-2 custom-scrollbar">
+                                            {user.accessible_dashboards && user.accessible_dashboards.length > 0 ? (
+                                                user.accessible_dashboards.map((db, i) => (
+                                                    <span key={i} className="px-2 py-0.5 bg-gray-50 text-gray-600 text-[9px] font-bold uppercase tracking-wider rounded-md border border-gray-200/50 dark:bg-gray-900 dark:text-gray-400 dark:border-gray-700 whitespace-nowrap">
+                                                        {db}
+                                                    </span>
+                                                ))
+                                            ) : (
+                                                <span className="text-[9px] font-black text-gray-300 uppercase tracking-widest italic opacity-60">Nenhum acesso</span>
+                                            )}
+                                        </div>
                                     </td>
-                                    <td className="px-8 py-6 whitespace-nowrap text-right text-xs font-black">
-                                        <button 
-                                            onClick={() => toggleUserStatus(user.id)}
-                                            className={`transition-all uppercase tracking-widest ${user.is_active ? 'text-red-400 hover:text-red-600' : 'text-green-500 hover:text-green-600 font-bold'}`}
-                                        >
-                                            {user.is_active ? 'Desativar' : 'Ativar'}
-                                        </button>
+                                    <td className="px-8 py-6 whitespace-nowrap text-right">
+                                        <div className="flex justify-end pr-4">
+                                            <label className="relative inline-flex items-center cursor-pointer group">
+                                                <input 
+                                                    type="checkbox" 
+                                                    className="sr-only peer"
+                                                    checked={user.is_active}
+                                                    onChange={() => toggleUserStatus(user.id)}
+                                                />
+                                                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500 shadow-inner group-active:scale-95 duration-200"></div>
+                                                <span className="ml-3 text-[10px] font-black uppercase tracking-widest text-gray-400 peer-checked:text-green-600 transition-colors">
+                                                    {user.is_active ? 'Ativo' : 'Inativo'}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
