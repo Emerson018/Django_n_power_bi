@@ -1,4 +1,5 @@
 from django.db.models.signals import post_save, post_delete
+from django.contrib.auth.signals import user_login_failed
 from django.dispatch import receiver
 from crum import get_current_user
 from .models import User, Dashboard, DashboardType, AuditLog
@@ -52,3 +53,13 @@ def user_saved(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=User)
 def user_deleted(sender, instance, **kwargs):
     log_action(instance, 'Remoção', 'Usuário')
+
+@receiver(user_login_failed)
+def login_failed(sender, credentials, request, **kwargs):
+    username = credentials.get('username', 'N/A')
+    AuditLog.objects.create(
+        user=None,
+        action_type='Falha de Login',
+        object_type='Segurança',
+        object_name=f"Tentativa falha para: {username}"
+    )

@@ -9,12 +9,50 @@ const api = axios.create({
 
 // Interceptor para adicionar o token em todas as requisições
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = sessionStorage.getItem('accessToken');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
 });
+
+// Interceptor para lidar com expiração de token (Refresh Token)
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+        
+        // Pula se for a própria rota de login para evitar loops ou recarregamento
+        if (originalRequest.url?.includes('/token/')) {
+            return Promise.reject(error);
+        }
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+            try {
+                const refreshToken = sessionStorage.getItem('refreshToken');
+                if (!refreshToken) throw new Error("No refresh token");
+
+                const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+                    refresh: refreshToken,
+                });
+
+                const newAccessToken = response.data.access;
+                sessionStorage.setItem('accessToken', newAccessToken);
+
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return api(originalRequest);
+            } catch (refreshError) {
+                // Se o refresh falhar, desloga o usuário
+                sessionStorage.removeItem('accessToken');
+                sessionStorage.removeItem('refreshToken');
+                window.location.href = '/login';
+                return Promise.reject(refreshError);
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
@@ -23,7 +61,7 @@ export const AuthProvider = ({ children }) => {
     const [isLoadingDashboards, setIsLoadingDashboards] = useState(false);
 
     const fetchDashboards = async () => {
-        if (!localStorage.getItem('accessToken')) return;
+        if (!sessionStorage.getItem('accessToken')) return;
         setIsLoadingDashboards(true);
         try {
             const response = await api.get('/dashboards/');
@@ -38,8 +76,8 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         const response = await api.post('/token/', { username, password });
-        localStorage.setItem('accessToken', response.data.access);
-        localStorage.setItem('refreshToken', response.data.refresh);
+        sessionStorage.setItem('accessToken', response.data.access);
+        sessionStorage.setItem('refreshToken', response.data.refresh);
         await loadUser();
         await fetchDashboards();
     };
@@ -49,8 +87,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
+        sessionStorage.clear(); // Limpa tudo rigorosamente
         setUser(null);
         setDashboards([]);
     };
@@ -68,7 +105,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
+        const token = sessionStorage.getItem('accessToken');
         if (token) {
             loadUser();
         } else {

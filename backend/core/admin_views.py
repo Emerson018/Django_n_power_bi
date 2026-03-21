@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import User, Dashboard, Role, DashboardType, AuditLog
 from .serializers import UserSerializer, RegisterSerializer
+from .permissions import IsSystemAdmin
 from rest_framework import serializers
 
 class DashboardTypeSerializer(serializers.ModelSerializer):
@@ -77,7 +78,7 @@ class AuditLogPagination(PageNumberPagination):
 class AdminUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().prefetch_related('roles', 'specific_dashboards')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsSystemAdmin]
 
     @action(detail=True, methods=['post'])
     def toggle_status(self, request, pk=None):
@@ -97,20 +98,20 @@ class AdminUserViewSet(viewsets.ModelViewSet):
 class AdminDashboardViewSet(viewsets.ModelViewSet):
     queryset = Dashboard.objects.all()
     serializer_class = DashboardSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsSystemAdmin]
 
 class AdminAuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all().order_by('-timestamp')
     serializer_class = AuditLogSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsSystemAdmin]
     pagination_class = AuditLogPagination
 
 class AdminRoleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsSystemAdmin]
 
 class AdminDashboardTypeViewSet(viewsets.ModelViewSet):
     queryset = DashboardType.objects.all()
     serializer_class = DashboardTypeSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [IsSystemAdmin]

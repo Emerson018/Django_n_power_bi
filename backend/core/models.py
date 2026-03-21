@@ -50,6 +50,7 @@ class AuditLog(models.Model):
         ('Inserção', 'Inserção'),
         ('Edição', 'Edição'),
         ('Remoção', 'Remoção'),
+        ('Falha de Login', 'Falha de Login'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)

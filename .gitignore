@@ -1,5 +1,9 @@
 # Global
 .env
+.env.*
+!.env.example
+.venv/
+node_modules/
 .DS_Store
 .idea/
 .vscode/
