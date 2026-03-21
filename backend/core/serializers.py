@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Role
+from .models import User, Role, Dashboard
 from django.db.models import Q
 
 class UserSerializer(serializers.ModelSerializer):
@@ -16,24 +16,42 @@ class UserSerializer(serializers.ModelSerializer):
         required=False
     )
     accessible_dashboards = serializers.SerializerMethodField()
+    specific_dashboard_ids = serializers.PrimaryKeyRelatedField(
+        many=True,
+        queryset=Dashboard.objects.all(),
+        source='specific_dashboards',
+        required=False
+    )
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'is_active', 'role_names', 'role_ids', 'accessible_dashboards')
+        fields = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'is_superuser', 'is_active', 'role_names', 'role_ids', 'accessible_dashboards', 'specific_dashboard_ids')
 
     def get_accessible_dashboards(self, obj):
-        from .models import Dashboard
-        # Se for superusuário ou admin, vê tudo
-        if obj.is_superuser or obj.roles.filter(name__icontains='Admin').exists():
-            return sorted(list(Dashboard.objects.all().values_list('name', flat=True)))
+        # Use prefetched roles to avoid query
+        roles = list(obj.roles.all())
+        is_admin = obj.is_superuser or any('admin' in r.name.lower() for r in roles)
         
-        # Caso contrário, filtra por acesso direto ou via role
-        user_roles = obj.roles.all()
-        dashboards = Dashboard.objects.filter(
-            Q(allowed_users=obj) | 
-            Q(allowed_roles__in=user_roles)
-        ).distinct()
-        return sorted(list(dashboards.values_list('name', flat=True)))
+        if is_admin:
+            # Cache all dashboard names in context for the duration of the request
+            if 'all_dashboards_names' not in self.context:
+                self.context['all_dashboards_names'] = list(Dashboard.objects.all().values_list('name', flat=True))
+            return sorted(self.context['all_dashboards_names'])
+        
+        # For non-admins, get from roles and specific dashboards (prefetched)
+        accessible = set()
+        
+        # Add dashboards from roles
+        for role in roles:
+            # This still might trigger queries if not prefetched on the roles themselves.
+            # But the AdminUserViewSet prefetches roles on users, not dashboards on roles.
+            # Let's keep it simple for now as roles are usually few.
+            accessible.update(role.dashboards.all().values_list('name', flat=True))
+            
+        # Add specific dashboards (prefetched)
+        accessible.update(obj.specific_dashboards.all().values_list('name', flat=True))
+        
+        return sorted(list(accessible))
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)

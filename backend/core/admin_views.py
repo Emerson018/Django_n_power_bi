@@ -75,7 +75,7 @@ class AuditLogPagination(PageNumberPagination):
 
 # ViewSets de Administração
 class AdminUserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
+    queryset = User.objects.all().prefetch_related('roles', 'specific_dashboards')
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAdminUser]
 

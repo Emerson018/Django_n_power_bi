@@ -150,20 +150,14 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
             </div>
 
             {filteredAndSortedDashboards.length === 0 && (
-                <div className="bg-white rounded-[40px] border-4 border-dashed border-gray-100 p-24 text-center">
-                    <div className="w-20 h-20 bg-white shadow-xl shadow-gray-200/40 rounded-3xl flex items-center justify-center mx-auto mb-6 text-gray-200">
+                <div className="bg-white rounded-[40px] border-4 border-dashed border-gray-100 p-24 text-center dark:bg-gray-800/50 dark:border-gray-700 transition-colors">
+                    <div className="w-20 h-20 bg-white shadow-xl shadow-gray-200/40 rounded-3xl flex items-center justify-center mx-auto mb-6 text-gray-200 dark:bg-gray-900 dark:shadow-none dark:text-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1} stroke="currentColor" className="w-10 h-10">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
                     </div>
-                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest mb-2">Sem Resultados</h3>
-                    <p className="text-gray-400 font-medium max-w-sm mx-auto leading-relaxed">Não encontramos relatórios que correspondam aos filtros selecionados.</p>
-                    <button 
-                        onClick={() => {setSearchTerm(''); setSelectedCategories([]);}}
-                        className="mt-8 text-xs font-black text-secondary uppercase tracking-widest hover:underline"
-                    >
-                        Resetar todos os filtros
-                    </button>
+                    <h3 className="text-xl font-black text-gray-900 uppercase tracking-widest mb-2 dark:text-white">Sem Resultados</h3>
+                    <p className="text-gray-400 font-medium max-w-sm mx-auto leading-relaxed dark:text-gray-500">Não encontramos relatórios que correspondam aos filtros selecionados.</p>
                 </div>
             )}
         </div>

@@ -15,12 +15,19 @@ const DashboardManagement = () => {
         category_id: '',
         allowed_user_ids: []
     });
+    const [urlError, setUrlError] = useState('');
 
     const [editingId, setEditingId] = useState(null);
     
     // Estados para o Modal de Exclusão
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [idToDelete, setIdToDelete] = useState(null);
+    const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+
+    const showNotification = (message, type = 'success') => {
+        setToast({ show: true, message, type });
+        setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+    };
 
     const fetchData = async () => {
         try {
@@ -74,6 +81,14 @@ const DashboardManagement = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        
+        // Validação de link do Power BI
+        if (!formData.public_url.toLowerCase().includes('powerbi.com')) {
+            setUrlError('O link deve ser obrigatoriamente um dashboard do Power BI (app.powerbi.com)');
+            return;
+        }
+        setUrlError('');
+
         try {
             const dataToSubmit = {
                 ...formData,
@@ -90,6 +105,7 @@ const DashboardManagement = () => {
             setEditingId(null);
             fetchData();
             fetchDashboards();
+            showNotification(editingId ? "Dashboard atualizado com sucesso!" : "Dashboard publicado com sucesso!");
         } catch (error) {
             alert("Erro ao salvar dashboard");
         }
@@ -123,6 +139,7 @@ const DashboardManagement = () => {
             setIdToDelete(null);
             fetchData();
             fetchDashboards();
+            showNotification("Dashboard removido com sucesso!", "error");
         } catch (error) {
             console.error("Erro ao excluir dashboard:", error);
             alert("Erro ao excluir dashboard");
@@ -209,10 +226,18 @@ const DashboardManagement = () => {
                             <label className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-widest ml-1 dark:text-gray-500">Link Dashboard</label>
                             <input 
                                 type="url" placeholder="https://app.powerbi.com/..." required
-                                className="w-full px-8 py-5 border border-gray-300 rounded-2xl focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-500 placeholder:font-medium dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-700"
+                                className={`w-full px-8 py-5 border ${urlError ? 'border-red-500 focus:ring-red-500/5 focus:border-red-500' : 'border-gray-300 focus:ring-secondary/5 focus:border-secondary'} rounded-2xl transition-all bg-gray-50/30 font-bold text-gray-700 placeholder:text-gray-500 placeholder:font-medium dark:bg-gray-900 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-700`}
                                 value={formData.public_url}
-                                onChange={e => setFormData({...formData, public_url: e.target.value})}
+                                onChange={e => {
+                                    setFormData({...formData, public_url: e.target.value});
+                                    if (urlError) setUrlError('');
+                                }}
                             />
+                            {urlError && (
+                                <p className="text-[10px] text-red-500 font-bold uppercase tracking-wider ml-4 animate-bounce">
+                                    ⚠️ {urlError}
+                                </p>
+                            )}
                         </div>
                     </div>
 
@@ -378,6 +403,30 @@ const DashboardManagement = () => {
                 title="Arquivar Dashboard?"
                 message="Esta ação irá remover o acesso de todos os colaboradores a este relatório. O histórico de logs será mantido para auditoria."
             />
+
+            {/* Toast Notification */}
+            {toast.show && (
+                <div className={`fixed top-10 right-10 z-[100] animate-in slide-in-from-right-10 duration-500`}>
+                    <div className={`flex items-center gap-4 px-8 py-5 rounded-[24px] shadow-2xl border ${
+                        toast.type === 'success' 
+                        ? 'bg-secondary text-white border-secondary/20 shadow-secondary/20' 
+                        : 'bg-red-500 text-white border-red-400 shadow-red-200/50'
+                    }`}>
+                        <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                            {toast.type === 'success' ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            )}
+                        </div>
+                        <span className="font-black uppercase tracking-widest text-[11px]">{toast.message}</span>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

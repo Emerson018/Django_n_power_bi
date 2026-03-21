@@ -15,7 +15,7 @@ function Sidebar({ isCollapsed }) {
   const location = useLocation();
 
   return (
-    <aside className={`bg-primary text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-20 transition-all duration-300 ease-in-out dark:bg-gray-800 ${isCollapsed ? 'w-0 -translate-x-full' : 'w-72 translate-x-0'}`}>
+    <aside className={`bg-primary text-white flex flex-col h-screen fixed left-0 top-0 shadow-xl z-50 transition-all duration-300 ease-in-out dark:bg-gray-800 ${isCollapsed ? 'w-0 -translate-x-full' : 'w-72 translate-x-0'}`}>
       <div className={`p-8 border-b border-white/10 transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>
         <h1 className="text-2xl font-bold tracking-tight">BI Portal</h1>
         <p className="text-xs text-secondary mt-1 font-medium uppercase tracking-widest">Enterprise Analytics</p>
@@ -112,7 +112,7 @@ function Header({ title, subtitle, onToggleSidebar, isSidebarCollapsed }) {
   const isHomePage = location.pathname === '/';
 
   return (
-    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10 sticky top-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
+    <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-40 sticky top-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
       <div className="flex items-center gap-8 flex-1">
         <div className="flex items-center gap-4">
           <button 
