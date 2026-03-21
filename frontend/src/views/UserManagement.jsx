@@ -52,9 +52,6 @@ const UserManagement = () => {
     return (
         <div className="space-y-10 animate-in fade-in duration-700">
             <div className="flex justify-between items-end">
-                <div>
-                    <h2 className="text-3xl font-black text-primary tracking-tight dark:text-white">Gestão de Usuários</h2>
-                </div>
             </div>
 
             <div className="bg-white shadow-xl shadow-gray-200/40 border border-gray-100 rounded-[32px] overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">

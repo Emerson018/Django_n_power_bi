@@ -187,7 +187,6 @@ const DashboardManagement = () => {
 
     return (
         <div className="space-y-10">
-            <h2 className="text-3xl font-black text-primary tracking-tight dark:text-white">Gestão de Dashboards</h2>
 
             {/* Formulário de Criação/Edição */}
             <div className="bg-white p-10 rounded-[40px] shadow-xl shadow-gray-200/40 border border-gray-100/50 dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
@@ -314,7 +313,11 @@ const DashboardManagement = () => {
                                 >
                                     <td className="px-10 py-8 whitespace-nowrap">
                                         <div className="text-base font-black text-gray-800 tracking-tight group-hover:text-primary transition-colors dark:text-white dark:group-hover:text-white/80">{db.name}</div>
-                                        <div className="text-[11px] text-gray-500 truncate max-w-xs mt-2 font-medium uppercase tracking-tighter dark:text-gray-500">{db.public_url}</div>
+                                        {db.created_at && (
+                                            <div className="text-[10px] text-gray-400 truncate max-w-xs mt-2 font-medium uppercase tracking-widest dark:text-gray-500">
+                                                Criado em {new Date(db.created_at).toLocaleDateString('pt-BR')}
+                                            </div>
+                                        )}
                                     </td>
                                     <td className="px-10 py-8 whitespace-nowrap">
                                         {db.category_name ? (
@@ -329,12 +332,6 @@ const DashboardManagement = () => {
                                         {renderUserStack(db.allowed_user_names)}
                                     </td>
                                     <td className="px-10 py-8 whitespace-nowrap text-right text-[11px] font-black space-x-8">
-                                        <button 
-                                            type="button"
-                                            className="text-primary hover:text-primary/70 transition-all uppercase tracking-[0.2em] relative after:content-[''] after:absolute after:bottom-[-2px] after:left-0 after:w-0 after:h-[2px] after:bg-primary hover:after:w-full after:transition-all"
-                                        >
-                                            Editar
-                                        </button>
                                         <button 
                                             type="button"
                                             onClick={(e) => handleDeleteClick(e, db.id)}

@@ -2,11 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+import { useFilter } from '../context/FilterContext';
+
 const AllDashboardsView = ({ onSelectDashboard }) => {
     const { dashboards, isLoadingDashboards } = useAuth();
+    const { searchTerm, sortBy } = useFilter(); // Consumindo do contexto global
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
-    const [sortBy, setSortBy] = useState('newest'); // 'alphabetical', 'newest'
     const [selectedCategories, setSelectedCategories] = useState([]); // Array de nomes de categorias selecionadas
 
     const handleAccess = (db) => {
@@ -58,57 +59,6 @@ const AllDashboardsView = ({ onSelectDashboard }) => {
 
     return (
         <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-1000 ease-out">
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-                <div className="max-w-xl">
-                    <h1 className="text-4xl font-black text-primary tracking-tight leading-none mb-4 dark:text-white">Portal de Dashboards</h1>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4 w-full lg:w-auto">
-                    {/* Campo de Busca */}
-                    <div className="relative group flex-1 md:w-80">
-                        <div className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-secondary transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                            </svg>
-                        </div>
-                        <input 
-                            type="text" 
-                            placeholder="Buscar pelo nome..." 
-                            className="w-full pl-14 pr-12 py-4 bg-white border border-gray-300 rounded-2xl shadow-sm focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all font-bold text-gray-700 placeholder:text-gray-500 placeholder:font-medium dark:bg-gray-800 dark:border-gray-600 dark:text-white dark:placeholder:text-gray-400"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        {searchTerm && (
-                            <button 
-                                onClick={() => setSearchTerm('')}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-300 hover:text-red-400 transition-colors"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Filtros de Ordenação */}
-                    <div className="relative md:w-64">
-                        <select 
-                            className="w-full px-8 py-4 bg-white border border-gray-300 rounded-2xl shadow-sm focus:ring-8 focus:ring-secondary/5 focus:border-secondary transition-all font-bold text-xs uppercase tracking-widest text-gray-700 appearance-none cursor-pointer pr-12 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300"
-                            value={sortBy}
-                            onChange={(e) => setSortBy(e.target.value)}
-                        >
-                            <option value="newest" className="dark:bg-gray-800 text-gray-700 dark:text-gray-300">📅 Data de Criação</option>
-                            <option value="alphabetical" className="dark:bg-gray-800 text-gray-700 dark:text-gray-300">🔤 Ordem Alfabética</option>
-                        </select>
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-300">
-                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-4 h-4">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             {/* Filtro de Categorias (Chips) */}
             <div className="flex flex-col gap-4">
                 <span className="text-[10px] font-black text-[#003B67]/80 uppercase tracking-[0.2em] ml-1 dark:text-gray-400">Filtrar por Categoria:</span>

@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions, status
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from .models import User, Dashboard, Role, DashboardType, AuditLog
@@ -62,6 +63,11 @@ class AuditLogSerializer(serializers.ModelSerializer):
         model = AuditLog
         fields = ('id', 'username', 'action_type', 'object_type', 'object_name', 'timestamp')
 
+class AuditLogPagination(PageNumberPagination):
+    page_size = 50
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
 # ViewSets de Administração
 class AdminUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -92,6 +98,7 @@ class AdminAuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all().order_by('-timestamp')
     serializer_class = AuditLogSerializer
     permission_classes = [permissions.IsAdminUser]
+    pagination_class = AuditLogPagination
 
 class AdminRoleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Role.objects.all()

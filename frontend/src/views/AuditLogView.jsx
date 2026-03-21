@@ -5,16 +5,32 @@ const AuditLogView = () => {
     const { api } = useAuth();
     const [logs, setLogs] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    
+    // Estados para Paginação
+    const [pageSize, setPageSize] = useState(50);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalCount, setTotalCount] = useState(0);
+
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     useEffect(() => {
-        fetchLogs();
-    }, []);
+        fetchLogs(1, pageSize);
+    }, [pageSize]);
 
-    const fetchLogs = async () => {
+    const fetchLogs = async (page = 1, size = pageSize) => {
         setIsLoading(true);
         try {
-            const response = await api.get('/admin/audit-logs/');
-            setLogs(response.data);
+            const response = await api.get(`/admin/audit-logs/?page=${page}&page_size=${size}`);
+            // DRF paginado retorna { count, next, previous, results }
+            if (response.data.results) {
+                setLogs(response.data.results);
+                setTotalCount(response.data.count);
+                setCurrentPage(page);
+            } else {
+                // Fallback para caso não esteja paginado no backend ainda (não deve ocorrer se o backend foi atualizado)
+                setLogs(response.data);
+                setTotalCount(response.data.length);
+            }
         } catch (error) {
             console.error('Erro ao buscar histórico:', error);
         } finally {
@@ -31,7 +47,13 @@ const AuditLogView = () => {
         }
     };
 
-    if (isLoading) {
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            fetchLogs(newPage, pageSize);
+        }
+    };
+
+    if (isLoading && logs.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center py-32">
                 <div className="w-16 h-16 border-4 border-gray-100 border-t-secondary rounded-full animate-spin"></div>
@@ -41,20 +63,42 @@ const AuditLogView = () => {
     }
 
     return (
-        <div className="space-y-10 animate-in fade-in duration-700 ease-out">
+        <div className="space-y-10 animate-in fade-in duration-700 ease-out pb-10">
             <div className="flex justify-between items-end">
                 <div>
-                    <h1 className="text-3xl font-black text-primary tracking-tight dark:text-white">Histórico de Auditoria</h1>
+                    <p className="text-gray-400 text-xs font-bold uppercase tracking-widest mt-2">
+                        Exibindo {logs.length} de {totalCount} registros
+                    </p>
                 </div>
-                <button 
-                    onClick={fetchLogs}
-                    className="p-4 bg-white hover:bg-gray-50 rounded-2xl border border-gray-100 transition-all text-gray-400 hover:text-secondary shadow-sm hover:shadow-md active:scale-95 group dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500 dark:hover:text-secondary"
-                    title="Atualizar Histórico"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-6 h-6 group-hover:rotate-180 transition-transform duration-500">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                    </svg>
-                </button>
+                
+                <div className="flex items-center gap-4">
+                    {/* Seletor de Limite */}
+                    <div className="flex bg-white p-1 rounded-2xl border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                        {[50, 100].map((size) => (
+                            <button
+                                key={size}
+                                onClick={() => setPageSize(size)}
+                                className={`px-4 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
+                                    pageSize === size 
+                                    ? 'bg-secondary text-white shadow-lg shadow-secondary/30' 
+                                    : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+                                }`}
+                            >
+                                {size} Itens
+                            </button>
+                        ))}
+                    </div>
+
+                    <button 
+                        onClick={() => fetchLogs(currentPage, pageSize)}
+                        className="p-4 bg-white hover:bg-gray-50 rounded-2xl border border-gray-100 transition-all text-gray-400 hover:text-secondary shadow-sm hover:shadow-md active:scale-95 group dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500 dark:hover:text-secondary"
+                        title="Atualizar Histórico"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className={`w-6 h-6 group-hover:rotate-180 transition-transform duration-500 ${isLoading ? 'animate-spin' : ''}`}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <div className="bg-white rounded-[32px] shadow-xl shadow-gray-200/40 border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
@@ -117,6 +161,68 @@ const AuditLogView = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Paginação */}
+                {totalPages > 1 && (
+                    <div className="px-8 py-6 border-t border-gray-50 bg-gray-50/30 flex items-center justify-between dark:border-gray-700 dark:bg-gray-900/30">
+                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            Página {currentPage} de {totalPages}
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => handlePageChange(currentPage - 1)}
+                                disabled={currentPage === 1 || isLoading}
+                                className="p-2 rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all dark:bg-gray-800 dark:border-gray-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                                </svg>
+                            </button>
+
+                            {/* Números das Páginas (Simplificado) */}
+                            <div className="flex items-center gap-1">
+                                {[...Array(totalPages)].map((_, i) => {
+                                    const pageNum = i + 1;
+                                    // Mostrar apenas algumas páginas se houver muitas
+                                    if (
+                                        totalPages > 7 && 
+                                        pageNum !== 1 && 
+                                        pageNum !== totalPages && 
+                                        Math.abs(pageNum - currentPage) > 1
+                                    ) {
+                                        if (pageNum === 2 || pageNum === totalPages - 1) return <span key={pageNum} className="px-1 text-gray-300">...</span>;
+                                        return null;
+                                    }
+
+                                    return (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => handlePageChange(pageNum)}
+                                            className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all ${
+                                                currentPage === pageNum
+                                                ? 'bg-primary text-white shadow-md shadow-primary/20 dark:bg-secondary'
+                                                : 'text-gray-400 hover:bg-white hover:text-gray-600 dark:hover:bg-gray-800'
+                                            }`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
+                            <button
+                                onClick={() => handlePageChange(currentPage + 1)}
+                                disabled={currentPage === totalPages || isLoading}
+                                className="p-2 rounded-xl border border-gray-100 bg-white text-gray-400 hover:text-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-all dark:bg-gray-800 dark:border-gray-700"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

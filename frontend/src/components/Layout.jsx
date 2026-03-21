@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PowerBIViewer from './PowerBIViewer';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeProvider';
+import { useFilter } from '../context/FilterContext';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import UserManagement from '../views/UserManagement';
 import DashboardManagement from '../views/DashboardManagement';
@@ -116,26 +117,83 @@ function Sidebar({ isCollapsed }) {
   );
 }
 
-function Header({ title, onToggleSidebar, isSidebarCollapsed }) {
+function Header({ title, subtitle, onToggleSidebar, isSidebarCollapsed }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { searchTerm, setSearchTerm, sortBy, setSortBy } = useFilter();
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
 
   return (
     <header className="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10 sticky top-0 shadow-sm dark:bg-gray-900 dark:border-gray-800">
-      <div className="flex items-center gap-4">
-        <button 
-          onClick={onToggleSidebar}
-          className="p-2 hover:bg-gray-50 rounded-lg transition-colors text-gray-500 group dark:hover:bg-gray-800/50"
-          title={isSidebarCollapsed ? "Expandir Menu" : "Recolher Menu"}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-6 h-6 transition-transform duration-300 ${isSidebarCollapsed ? '' : 'rotate-180'}`}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
-        <div className="flex flex-col">
-          <h2 className="text-xl font-bold text-gray-800 tracking-tight dark:text-white">{title}</h2>
-          <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5 dark:text-gray-500">Real-time Data Sync</p>
+      <div className="flex items-center gap-8 flex-1">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={onToggleSidebar}
+            className="p-2 hover:bg-gray-50 rounded-lg transition-colors text-gray-500 group dark:hover:bg-gray-800/50"
+            title={isSidebarCollapsed ? "Expandir Menu" : "Recolher Menu"}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className={`w-6 h-6 transition-transform duration-300 ${isSidebarCollapsed ? '' : 'rotate-180'}`}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+          <div className="flex flex-col min-w-[200px]">
+            <h2 className="text-xl font-bold text-gray-800 tracking-tight dark:text-white leading-tight">{title}</h2>
+            {subtitle && (
+              <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest mt-0.5 dark:text-gray-500">
+                {subtitle}
+              </p>
+            )}
+          </div>
         </div>
+
+        {/* Dashboard Filters - Only on Home */}
+        {isHomePage && (
+          <div className="flex items-center gap-4 flex-1 max-w-2xl animate-in fade-in slide-in-from-left-4 duration-500">
+            {/* Campo de Busca */}
+            <div className="relative group flex-1">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-secondary transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+              </div>
+              <input 
+                type="text" 
+                placeholder="Buscar dashboard..." 
+                className="w-full pl-11 pr-10 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-4 focus:ring-secondary/5 focus:border-secondary transition-all font-bold text-sm text-gray-700 placeholder:text-gray-400 placeholder:font-medium dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:placeholder:text-gray-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {searchTerm && (
+                <button 
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-300 hover:text-red-400 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+
+            {/* Ordenação */}
+            <div className="relative w-48">
+              <select 
+                className="w-full pl-4 pr-10 py-2.5 bg-gray-50 border border-gray-100 rounded-xl focus:ring-4 focus:ring-secondary/5 focus:border-secondary transition-all font-black text-[10px] uppercase tracking-widest text-gray-600 appearance-none cursor-pointer dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="newest" className="dark:bg-gray-800">📅 Data</option>
+                <option value="alphabetical" className="dark:bg-gray-800">🔤 Nome</option>
+              </select>
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor" className="w-3.5 h-3.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="flex items-center gap-6">
@@ -172,7 +230,7 @@ function Header({ title, onToggleSidebar, isSidebarCollapsed }) {
            <div className="flex flex-col text-right">
               <span className="text-sm font-bold text-gray-800 leading-none dark:text-white">{user?.username}</span>
               <span className="text-[10px] text-secondary font-bold uppercase mt-1 tracking-tighter dark:text-secondary">
-                {user?.is_staff ? 'Administrador' : 'Visualizador'}
+                {user?.is_staff ? 'Administrador' : 'Usuário'}
               </span>
            </div>
            <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center text-primary border border-primary/10 shadow-inner dark:bg-primary/20 dark:border-primary/30">
@@ -190,6 +248,54 @@ export default function Layout() {
   const { api, dashboards, fetchDashboards, isLoadingDashboards } = useAuth();
   const [selectedDashboard, setSelectedDashboard] = useState(null);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const location = useLocation();
+
+  // Restaurar dashboard selecionado do localStorage ao carregar a lista
+  useEffect(() => {
+    if (dashboards.length > 0 && !selectedDashboard) {
+      const savedId = localStorage.getItem('selectedDashboardId');
+      if (savedId) {
+        const db = dashboards.find(d => d.id.toString() === savedId);
+        if (db) setSelectedDashboard(db);
+      }
+    }
+  }, [dashboards, selectedDashboard]);
+
+  const handleSelectDashboard = (db) => {
+    setSelectedDashboard(db);
+    if (db) {
+      localStorage.setItem('selectedDashboardId', db.id.toString());
+    } else {
+      localStorage.removeItem('selectedDashboardId');
+    }
+  };
+
+  const getHeaderInfo = () => {
+    const path = location.pathname;
+    let title = "Administração";
+    let subtitle = null;
+
+    if (path === '/') {
+      title = "Portal de Dashboards";
+    } else if (path === '/viewer') {
+      title = selectedDashboard?.name || "Visualizador";
+      subtitle = selectedDashboard?.category_name || "Sem Segmento";
+    } else if (path === '/admin/users') {
+      title = "Gestão de Usuários";
+    } else if (path === '/admin/dashboards') {
+      title = "Gestão de Relatórios";
+    } else if (path === '/admin/dashboard-types') {
+      title = "Gestão de Categorias";
+    } else if (path === '/admin/audit-logs') {
+      title = "Histórico de Auditoria";
+    } else if (path === '/admin/panel') {
+      title = "Painel Administrativo";
+    }
+
+    return { title, subtitle };
+  };
+
+  const { title: headerTitle, subtitle: headerSubtitle } = getHeaderInfo();
 
   return (
     <div className="flex min-h-screen bg-gray-50 font-sans text-gray-900 antialiased selection:bg-secondary/30 dark:bg-gray-950 dark:text-white">
@@ -200,14 +306,15 @@ export default function Layout() {
       <main className={`flex-1 min-h-screen bg-gray-50 flex flex-col items-center transition-all duration-300 ease-in-out dark:bg-gray-950 ${isSidebarCollapsed ? 'ml-0' : 'ml-72'}`}>
         <div className="w-full max-w-[1600px] flex flex-col min-h-screen">
           <Header 
-            title={selectedDashboard?.name || "Administração"} 
+            title={headerTitle}
+            subtitle={headerSubtitle}
             onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
             isSidebarCollapsed={isSidebarCollapsed}
           />
           
           <div className="p-10 flex-1 flex flex-col">
             <Routes>
-              <Route path="/" element={<AllDashboardsView onSelectDashboard={setSelectedDashboard} />} />
+              <Route path="/" element={<AllDashboardsView onSelectDashboard={handleSelectDashboard} />} />
               <Route path="/viewer" element={
                 <PowerBIViewer 
                   embedUrl={selectedDashboard?.public_url} 

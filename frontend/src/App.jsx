@@ -21,23 +21,27 @@ const PrivateRoute = ({ children }) => {
   return user ? children : <Navigate to="/login" />;
 };
 
+import { FilterProvider } from './context/FilterContext'
+
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginView />} />
-          <Route path="/register" element={<RegisterView />} />
-          <Route 
-            path="/*" 
-            element={
-              <PrivateRoute>
-                <Layout />
-              </PrivateRoute>
-            } 
-          />
-        </Routes>
-      </BrowserRouter>
+      <FilterProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginView />} />
+            <Route path="/register" element={<RegisterView />} />
+            <Route 
+              path="/*" 
+              element={
+                <PrivateRoute>
+                  <Layout />
+                </PrivateRoute>
+              } 
+            />
+          </Routes>
+        </BrowserRouter>
+      </FilterProvider>
     </AuthProvider>
   )
 }

@@ -78,7 +78,6 @@ const DashboardTypeManagement = () => {
 
     return (
         <div className="space-y-10">
-            <h2 className="text-3xl font-black text-primary tracking-tight dark:text-white">Categorias de Dashboard</h2>
 
             {/* Formulário */}
             <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 transition-all hover:shadow-md dark:bg-gray-800 dark:border-gray-700 dark:shadow-none">
